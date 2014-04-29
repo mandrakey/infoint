@@ -1,0 +1,9 @@
+:toc:
+:toc-title: Inhalt
+
+= Informationen zu Aufgabe 1 : Informationsintegration
+
+== Webquellen und interessante Inhalte
+* http://www2.informatik.hu-berlin.de/~wandelt/II2014/01_Name2Country.pdf[Aufgabe PDF]
+* Levenshtein-Distance in Java: https://github.com/joewandy/BioinfoApp/blob/master/src/com/joewandy/bioinfoapp/model/stringDistance/LevenshteinDistance.java
+* http://en.wikipedia.org/wiki/Lists_of_most_common_surnames[Die häufigsten Familiennamen]
