@@ -7,3 +7,20 @@
 * http://www2.informatik.hu-berlin.de/~wandelt/II2014/01_Name2Country.pdf[Aufgabe PDF]
 * Levenshtein-Distance in Java: https://github.com/joewandy/BioinfoApp/blob/master/src/com/joewandy/bioinfoapp/model/stringDistance/LevenshteinDistance.java
 * http://en.wikipedia.org/wiki/Lists_of_most_common_surnames[Die häufigsten Familiennamen]
+* https://en.wikipedia.org/wiki/Lists_of_sportspeople[Lists of Sportspeople - Übersicht]
+
+=== Grundsätzlichens Vorgehen
+. Versuchen, exaktes Match in Datenbank zu finden
+  * Wird ein Match gefunden -> ausgeben
+  * Werden mehrere gefunden, häufigstes Land ausgeben (oder double-check mit Namepedia?)
+  * Kein Match gefunden -> Namepedia abfragen für alle Vornamen und Nachnamen, 
+    solang diese nicht abgekürzt sind (Vorsicht: Schreibfehler vorher korrigieren)
+
+== Ideen für das Programm
+
+=== SQL-Datenbank
+
+[code,sql]
+----
+SELECT n.id, n.first, n.last, q.qgram, count(q.qgram) AS nr FROM names AS n, qgrams AS q JOIN names_qgrams AS nq ON nq.names_id=n.id AND nq.qgrams_id=q.id WHERE q.qgram IN ('Jo', 'os', 'se', 'ep', 'ph', 'Gr', 'ri', 'il', 'll', 'li') GROUP BY n.id HAVING nr > 2 ORDER BY nr DESC;
+----
