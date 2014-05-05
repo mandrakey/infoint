@@ -94,7 +94,6 @@ public class DBCreate {
 		}
 		
 		Log.DEBUG = DEBUG;
-		Log.DEBUG = false;
 		
 		//----------------------------------------------------------------------
 		// Start parser
