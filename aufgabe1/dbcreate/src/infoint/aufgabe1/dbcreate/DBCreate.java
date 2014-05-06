@@ -85,8 +85,10 @@ public class DBCreate {
 		CommandLineOption helpOption = new CommandLineOption("?", "help", "Display usage information");
 		CommandLineOption debugOption = new CommandLineOption("d", "debug", "Display debug output");
 		CommandLineOption pathOption = new CommandLineOption("p", "path", "Path to directory containing files to parse");
+		CommandLineOption outputOption = new CommandLineOption("o", "output", "Path to write result database file to");
 		
-		parser.addOption(helpOption).addOption(debugOption).addOption(pathOption);
+		parser.addOption(helpOption).addOption(debugOption).addOption(pathOption)
+				.addOption(outputOption);
 		parser.addPositionalOption(pathOption, 1);
 		parser.parse(args);
 		
@@ -98,6 +100,9 @@ public class DBCreate {
 		DEBUG = parser.isSet(debugOption) ? true : false;
 		if (parser.isSet(pathOption)) {
 			PATH = parser.getArgumentsForOption(pathOption).get(0).getValue().toString();
+		}
+		if (parser.isSet(outputOption)) {
+			DBFILE = parser.getArgumentsForOption(outputOption).get(0).getValue().toString();
 		}
 		
 		Log.DEBUG = DEBUG;
