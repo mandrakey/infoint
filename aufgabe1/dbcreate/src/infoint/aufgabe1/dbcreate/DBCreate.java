@@ -22,10 +22,14 @@
 package infoint.aufgabe1.dbcreate;
 
 import java.io.IOException;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
 
 import infoint.aufgabe1.dbcreate.parser.CSVParser;
 import infoint.aufgabe1.dbcreate.parser.FileEntry;
+import infoint.aufgabe1.dbcreate.Database;
 
 import com.bleuelmedia.javatools.cliparser.CommandLineOption;
 import com.bleuelmedia.javatools.cliparser.CommandLineParser;
@@ -53,6 +57,8 @@ public class DBCreate {
 	 * Derived from command-line argument "-p|--path".
 	 */
 	public static String PATH = ".";
+	
+	public static String DBFILE = "./name2country.db3";
 	
 	//==========================================================================
 	// CLASS METHODS
@@ -97,6 +103,16 @@ public class DBCreate {
 		Log.DEBUG = DEBUG;
 		
 		//----------------------------------------------------------------------
+		// Load database driver
+		
+		try {
+			Class.forName("org.sqlite.JDBC");
+		} catch (ClassNotFoundException ex) {
+			Log.e(TAG, "Could not load SQLite driver: " + ex.getMessage());
+			System.exit(1);
+		}
+		
+		//----------------------------------------------------------------------
 		// Start parser
 		
 		CSVParser csvp = CSVParser.getInstance();
@@ -107,25 +123,67 @@ public class DBCreate {
 			return;
 		}
 		
-		// Test: Output data
-		/** @todo: Remove test output, replace with DB insertion */
-		System.out.println("\n\nGot the following entries:\n====\n");
+		//----------------------------------------------------------------------
+		// Write data to database
+		
 		HashMap<String, FileEntry> entries = csvp.getEntries();
-		for (String name : entries.keySet()) {
-			FileEntry e = entries.get(name);
-			StringBuilder sb = new StringBuilder();
-			sb.append("{ name: '" + name + "', "
-					+ "country: '" + e.country + "', qgrams: [ ");
-			for (String s : e.qgrams) {
-				sb.append(s + " ");
-			}
-			sb.append("] }");
+		System.out.println("Got total of " + entries.size() + " entries.");
+		
+		System.out.println("\n====\nWriting data to database ...\n");
+		writeDbData();
+		
+	}
+	
+	private static void writeDbData() {
+		try {
+			Database db = new Database(DBFILE);
+			db.open();
 			
-			System.out.println(sb.toString());
+			CSVParser csvp = CSVParser.getInstance();
+			HashMap<String, FileEntry> entries = csvp.getEntries();
+			
+			Statement st = db.createStatement();
+			st.execute("PRAGMA synchronous = OFF;");
+			st.execute("PRAGMA journal_mode = MEMORY;");
+			st.execute("CREATE TEMPORARY TABLE tmp (last_name_id INTEGER NOT NULL);");
+			
+			PreparedStatement insertNames = db.prepare("INSERT INTO names (name,country) VALUES (?,?)");
+			PreparedStatement insertQgrams = db.prepare("INSERT INTO qgrams (qgram,names_id) VALUES (?, (SELECT last_name_id FROM tmp LIMIT 1))");
+			
+			st.execute("INSERT INTO tmp VALUES (0);");
+			
+			int nr = 0;
+			st.execute("BEGIN TRANSACTION;");
+			for (String name : entries.keySet()) {
+				//Log.i(TAG, "Adding entry '" + name + "' ...");
+				FileEntry e = entries.get(name);
+				
+				// Add name and save name id
+				insertNames.setString(1, name);
+				insertNames.setString(2, e.country);
+				insertNames.execute();
+				st.execute("UPDATE tmp SET last_name_id=last_insert_rowid();");
+				
+				// Now add all qgrams
+				for (String qgram : e.qgrams) {
+					insertQgrams.setString(1, qgram);
+					insertQgrams.execute();
+				}
+				
+				if (++nr % 25 == 0) {
+					Log.i(TAG, "[" + nr + " / " + entries.size() + "].");
+				}
+			}
+			
+			st.execute("COMMIT;");
+			st.execute("DROP TABLE tmp;");
+			st.execute("PRAGMA synchronous = ON;");
+			st.execute("PRAGMA journal_mode = DELETE;");
+			Log.i(TAG, "Done.");
+			
+		} catch (SQLException ex) {
+			Log.e(TAG, "Failed to insert data: " + ex.getMessage());
 		}
-		
-		System.out.println("====\nTotal: " + entries.size());
-		
 	}
 	
 }
