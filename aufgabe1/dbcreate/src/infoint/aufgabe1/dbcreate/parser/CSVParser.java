@@ -69,7 +69,7 @@ public class CSVParser {
 	/** @brief Regular expression for filename matching. */
 	private Pattern fileRx;
 	/** @brief Result HashMap containing Name to Country mappings. */
-	private HashMap<String, String> entries;
+	private HashMap<String, FileEntry> entries;
 	/** @brief Handles execution of file parser threads. */
 	private ExecutorService exec;
 	
@@ -127,10 +127,10 @@ public class CSVParser {
 	 * method is called by the individual FileParser threads to insert their 
 	 * results.
 	 * @param key Name to add
-	 * @param value Corresponding country
+	 * @param value Corresponding qgram/country pair
 	 * @todo Parse result names into q-grams, too
 	 */
-	public synchronized void addEntry(String key, String value) {
+	public synchronized void addEntry(String key, FileEntry value) {
 		if (!entries.containsKey(key)) {
 			entries.put(key, value);
 		}
@@ -143,7 +143,7 @@ public class CSVParser {
 		return lineRx;
 	}
 	
-	public HashMap<String, String> getEntries() {
+	public HashMap<String, FileEntry> getEntries() {
 		return entries;
 	}
 	

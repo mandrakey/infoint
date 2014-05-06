@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import infoint.aufgabe1.dbcreate.parser.CSVParser;
+import infoint.aufgabe1.dbcreate.parser.FileEntry;
 
 import com.bleuelmedia.javatools.cliparser.CommandLineOption;
 import com.bleuelmedia.javatools.cliparser.CommandLineParser;
@@ -109,9 +110,18 @@ public class DBCreate {
 		// Test: Output data
 		/** @todo: Remove test output, replace with DB insertion */
 		System.out.println("\n\nGot the following entries:\n====\n");
-		HashMap<String, String> entries = csvp.getEntries();
+		HashMap<String, FileEntry> entries = csvp.getEntries();
 		for (String name : entries.keySet()) {
-			System.out.println("{ name: '" + name + "', country: '" + entries.get(name) + "' }");
+			FileEntry e = entries.get(name);
+			StringBuilder sb = new StringBuilder();
+			sb.append("{ name: '" + name + "', "
+					+ "country: '" + e.country + "', qgrams: [ ");
+			for (String s : e.qgrams) {
+				sb.append(s + " ");
+			}
+			sb.append("] }");
+			
+			System.out.println(sb.toString());
 		}
 		
 		System.out.println("====\nTotal: " + entries.size());

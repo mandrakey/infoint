@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -83,7 +84,10 @@ public class FileParser extends Thread {
 					String[] tmp = m.group(1).trim().split(" ");
 					for (String s : tmp) {
 						if (s.length() > 2) {
-							csvp.addEntry(s, m.group(2).trim());
+							FileEntry e = new FileEntry();
+							e.qgrams = qgrams(s, 2);
+							e.country = m.group(2).trim();
+							csvp.addEntry(s, e);
 						}
 					}
 				}
@@ -97,6 +101,49 @@ public class FileParser extends Thread {
 			Log.e(TAG, "Failed to read from file '" + file + "'. Aborting.");
 			return;
 		}
+	}
+	
+	/**
+	 * @brief Divides an arbitrary string into qgrams of specified size.
+	 * @param text Text to divide.
+	 * @param size Size of the individual qgrams.
+	 * @param fetchBlanks Fetch blanks at beginning and end of text (written as 
+	 * # and $).
+	 * @return Vector of qgrams
+	 */
+	private Vector<String> qgrams(String text, int size, boolean fetchBlanks) {
+		if (text == null || text.isEmpty()) {
+			return null;
+		}
+		
+		Vector<String> v = new Vector<>();
+		
+		if (fetchBlanks) {
+			v.add("##");
+			v.add("#" + text.charAt(0));
+		}
+		
+		for (int i = 0; i < text.length() - 1; ++i) {
+			v.add("" + text.charAt(i) + text.charAt(i + 1));
+		}
+		
+		if (fetchBlanks) {
+			v.add(text.charAt(text.length() - 1) + "$");
+			v.add("$$");
+		}
+		
+		return v;
+	}
+	
+	/**
+	 * @brief Shortcut for qgrams.
+	 * Implicitly sets fetchBlanks to FALSE.
+	 * @param text Text to divide.
+	 * @param size Size of qgrams.
+	 * @return Vector of qgrams.
+	 */
+	private Vector<String> qgrams(String text, int size) {
+		return qgrams(text, size, false);
 	}
 	
 }
