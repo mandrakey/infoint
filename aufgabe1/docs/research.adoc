@@ -23,7 +23,7 @@
 
 [code,sql]
 ----
-SELECT n.id, n.first, n.last, q.qgram, count(q.qgram) AS nr FROM names AS n, qgrams AS q JOIN names_qgrams AS nq ON nq.names_id=n.id AND nq.qgrams_id=q.id WHERE q.qgram IN ('Jo', 'os', 'se', 'ep', 'ph', 'Gr', 'ri', 'il', 'll', 'li') GROUP BY n.id HAVING nr > 2 ORDER BY nr DESC;
+SELECT n.name, n.country, count(q.qgram) AS nr FROM qgrams AS q JOIN names AS n ON n.id =q.name_id WHERE q.qgram IN ('Hu', 'ub', 'bi', 'ie') GROUP BY name HAVING nr > 2 ORDER BY nr DESC;
 ----
 
 Zusätzlich sortien nach häufigstem Land im Ergebnis, auch mit weniger 
