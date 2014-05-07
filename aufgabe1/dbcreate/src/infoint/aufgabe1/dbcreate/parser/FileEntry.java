@@ -35,6 +35,7 @@ public class FileEntry {
 	
 	public Vector<String> qgrams;
 	public String country;
+	public String fullname;
 	
 	//==========================================================================
 	// INSTANCE METHODS
@@ -42,11 +43,13 @@ public class FileEntry {
 	public FileEntry() {
 		qgrams = null;
 		country = null;
+		fullname = null;
 	}
 	
-	public FileEntry(Vector<String> qgrams, String country) {
+	public FileEntry(Vector<String> qgrams, String country, String fullname) {
 		this.qgrams = qgrams;
 		this.country = country;
+		this.fullname = fullname;
 	}
 	
 }

@@ -81,12 +81,14 @@ public class FileParser extends Thread {
 				if (m.find() && m.groupCount() == 2) {
 					Log.d(TAG, "Add {name: " + m.group(1) + ", country: " + m.group(2) 
 							+ "} from '" + file + "'");
-					String[] tmp = m.group(1).trim().split(" ");
+					String fullname = m.group(1).trim();
+					String[] tmp = fullname.split(" ");
 					for (String s : tmp) {
 						if (s.length() > 2) {
 							FileEntry e = new FileEntry();
 							e.qgrams = qgrams(s, 2);
 							e.country = m.group(2).trim();
+							e.fullname = fullname;
 							csvp.addEntry(s, e);
 						}
 					}

@@ -152,7 +152,7 @@ public class DBCreate {
 			st.execute("PRAGMA journal_mode = MEMORY;");
 			st.execute("CREATE TEMPORARY TABLE tmp (last_name_id INTEGER NOT NULL);");
 			
-			PreparedStatement insertNames = db.prepare("INSERT INTO names (name,country) VALUES (?,?)");
+			PreparedStatement insertNames = db.prepare("INSERT INTO names (name,fullname,country) VALUES (?,?,?)");
 			PreparedStatement insertQgrams = db.prepare("INSERT INTO qgrams (qgram,names_id) VALUES (?, (SELECT last_name_id FROM tmp LIMIT 1))");
 			
 			st.execute("INSERT INTO tmp VALUES (0);");
@@ -165,7 +165,8 @@ public class DBCreate {
 				
 				// Add name and save name id
 				insertNames.setString(1, name);
-				insertNames.setString(2, e.country);
+				insertNames.setString(2, e.fullname.trim());
+				insertNames.setString(3, e.country.trim());
 				insertNames.execute();
 				st.execute("UPDATE tmp SET last_name_id=last_insert_rowid();");
 				

@@ -96,6 +96,7 @@ public class Database {
 			st.addBatch("CREATE TABLE \"names\" "
 					+ "(\"id\" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
 					+ "\"name\" TEXT NOT NULL, "
+					+ "\"fullname\" TEXT NOT NULL, "
 					+ "\"country\" TEXT NOT NULL);");
 			st.addBatch("CREATE TABLE \"qgrams\" "
 					+ "(\"id\" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
