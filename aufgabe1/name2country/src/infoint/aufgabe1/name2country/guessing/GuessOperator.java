@@ -68,18 +68,25 @@ public class GuessOperator {
 		
 		try {
 			String inputLine;
+			String mlc = null;
 			while ((inputLine = in.readLine()) != null) {
-				ArrayList<String> qgrams = nameToQgrams(inputLine);
+				// 1. Try to find semi-exact matching:
+				ResultSet rs = getExactCountryMatch(inputLine);
+				mlc = computeMostLikelyCountry(rs);
 				
-				Log.d(TAG, "QGRAMS for line '" + inputLine + "'");
-				for (String s : qgrams) {
-					System.out.print(s + " ");
+				if (mlc == null) {
+					// 2. Try qgram matching
+					Log.d(TAG, "Try qgram matching ...");
+					ArrayList<String> qgrams = nameToQgrams(inputLine);
+					rs = getCountriesFromDb(qgrams);
+					mlc = computeMostLikelyCountry(rs);
 				}
-				System.out.println("");
 				
-				// Load countries
-				ResultSet rs = getCountriesFromDb(qgrams);
-				out.write(computeMostLikelyCountry(rs) + "\n");
+				if (mlc == null) {
+					mlc = "Sorry, no match.";
+				}
+				out.write(mlc + "\n");
+				Log.i(TAG, "I guess, '" + inputLine + "' belongs to '" + mlc + "'");
 			}
 			
 			in.close();
@@ -133,6 +140,19 @@ public class GuessOperator {
 		return qgrams;
 	}
 	
+	private ResultSet getExactCountryMatch(String line) {
+		try {
+			Database db = new Database();
+			PreparedStatement pst = db.prepare("SELECT id as nr,name,country "
+					+ "FROM names WHERE fullname LIKE ?");
+			pst.setString(1, line.replace(" ", "%"));
+			return pst.executeQuery();
+		} catch (SQLException ex) {
+			Log.w(TAG, "Failed to look for exact match: " + ex.getMessage());
+			return null;
+		}
+	}
+	
 	private ResultSet getCountriesFromDb(ArrayList<String> qgrams) {
 		// Prepare question marks list
 		StringBuilder qmarks = new StringBuilder();
@@ -169,9 +189,25 @@ public class GuessOperator {
 		
 		try {
 			HashMap<String, Integer> countryCounts = new HashMap<>();
-			int maxCount = 0;
-			String mostLikelyCountry = "";
+			int qgramMatches = 0;
+			
+			// Fetch first
+			if (!rs.next()) {
+				return null;
+			}
+			Log.d(TAG, rs.getString("name") + ", " + rs.getString("country") + ": " + rs.getInt("nr"));
+			qgramMatches = rs.getInt("nr");
+			countryCounts.put(rs.getString("country"), 1);
+			int maxCount = 1;
+			String mostLikelyCountry = rs.getString("country");
+			
+			// Fetch other
 			while (rs.next()) {
+				Log.d(TAG, rs.getString("name") + ", " + rs.getString("country") + ": " + rs.getInt("nr"));
+				if (rs.getInt("nr") < qgramMatches) {
+					continue;
+				}
+				
 				String country = rs.getString("country");
 				int count = ((countryCounts.containsKey(country))
 						? countryCounts.get(country)
