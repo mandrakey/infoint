@@ -21,6 +21,8 @@
 
 package infoint.aufgabe1.name2country;
 
+import infoint.aufgabe1.name2country.guessing.GuessOperator;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.sql.SQLException;
@@ -83,6 +85,9 @@ public class Name2Country {
 			displayHelp();
 			return;
 		}
+		if (parser.isSet(debugOption)) {
+			DEBUG = true;
+		}
 		if (parser.isSet(outfileOption)) {
 			OUTFILE = parser.getArgumentsForOption(outfileOption).get(0).getValue().toString();
 		}
@@ -92,6 +97,8 @@ public class Name2Country {
 		if (parser.isSet(infileOption)) {
 			INFILE = parser.getArgumentsForOption(infileOption).get(0).getValue().toString();
 		}
+		
+		Log.DEBUG = DEBUG;
 		
 		//----------------------------------------------------------------------
 		// Load database driver
@@ -128,6 +135,12 @@ public class Name2Country {
 			Log.e(TAG, "Could not open the database: " + ex.getMessage());
 			System.exit(1);
 		}
+		
+		//----------------------------------------------------------------------
+		// Do the guessing
+		
+		GuessOperator go = new GuessOperator(INFILE, OUTFILE);
+		go.guessAll();
 		
 	}
 
