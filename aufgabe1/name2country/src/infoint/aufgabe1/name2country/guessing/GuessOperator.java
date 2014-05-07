@@ -14,6 +14,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -78,21 +79,13 @@ public class GuessOperator {
 				
 				// Load countries
 				ResultSet rs = getCountriesFromDb(qgrams);
-				while (rs.next()) {
-					System.out.println(rs.getString("name") + ": "
-							+ rs.getString("country") + " ("
-							+ rs.getInt("nr") + ")");
-				}
-//				out.write(computeMostLikelyCountry(qgrams));
+				out.write(computeMostLikelyCountry(rs) + "\n");
 			}
 			
 			in.close();
 			out.close();
 		} catch (IOException ex) {
 			Log.e(TAG, "Error while guessing the names: " + ex.getMessage());
-			return;
-		} catch (SQLException ex) {
-			Log.e(TAG, "Error while retrieving data: " + ex.getMessage());
 			return;
 		}
 	}
@@ -147,7 +140,6 @@ public class GuessOperator {
 			qmarks.append("?" + ((i != qgrams.size() - 1) ? ", ": ""));
 		}
 		
-		
 		try {
 			Database db = new Database();
 			PreparedStatement pst = db.prepare("SELECT n.name, n.country, count(q.qgram) AS nr "
@@ -167,6 +159,36 @@ public class GuessOperator {
 			Log.w(TAG, "Failed to retrieve possible countries for " + Arrays.deepToString(qgrams.toArray())
 					+ ": " + ex.getMessage());
 			return null;
+		}
+	}
+	
+	private String computeMostLikelyCountry(ResultSet rs) {
+		if (rs == null) {
+			return "No match.";
+		}
+		
+		try {
+			HashMap<String, Integer> countryCounts = new HashMap<>();
+			int maxCount = 0;
+			String mostLikelyCountry = "";
+			while (rs.next()) {
+				String country = rs.getString("country");
+				int count = ((countryCounts.containsKey(country))
+						? countryCounts.get(country)
+						: 0);
+				
+				countryCounts.put(country, ++count);
+				
+				if (count > maxCount) {
+					maxCount = count;
+					mostLikelyCountry = country;
+				}
+			}
+			
+			return mostLikelyCountry;
+		} catch (SQLException ex) {
+			Log.w(TAG, "Failed to process country counts result set: " + ex.getMessage());
+			return "Error.";
 		}
 	}
 	
