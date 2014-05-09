@@ -44,7 +44,7 @@ public class Name2Country {
 	
 	private static String DBFILE = "./name2country.db3";
 	
-	private static boolean DEBUG = true;
+	private static boolean DEBUG = false;
 	
 	//==========================================================================
 	// CLASS METHODS

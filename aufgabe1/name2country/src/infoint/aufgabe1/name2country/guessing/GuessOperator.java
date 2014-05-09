@@ -86,7 +86,7 @@ public class GuessOperator {
 					mlc = "Sorry, no match.";
 				}
 				out.write(mlc + "\n");
-				Log.i(TAG, "I guess, '" + inputLine + "' belongs to '" + mlc + "'");
+				//Log.i(TAG, "I guess, '" + inputLine + "' belongs to '" + mlc + "'");
 			}
 			
 			in.close();

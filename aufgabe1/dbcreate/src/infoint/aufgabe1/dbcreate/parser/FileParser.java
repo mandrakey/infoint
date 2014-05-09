@@ -44,6 +44,15 @@ public class FileParser extends Thread {
 	
 	public static final String TAG = "FileParser";
 	
+	private static Pattern ABBRV_NAME_RX;
+	
+	//==========================================================================
+	// CLASS MEMBERS
+	
+	static {
+		ABBRV_NAME_RX = Pattern.compile(".+\\.");
+	}
+	
 	//==========================================================================
 	// INSTANCE MEMBERS
 	
@@ -84,7 +93,8 @@ public class FileParser extends Thread {
 					String fullname = m.group(1).trim();
 					String[] tmp = fullname.split(" ");
 					for (String s : tmp) {
-						if (s.length() > 2) {
+						Matcher abbrvMatcher = ABBRV_NAME_RX.matcher(s);
+						if (s.length() > 2 || abbrvMatcher.find()) {
 							FileEntry e = new FileEntry();
 							e.qgrams = qgrams(s, 2);
 							e.country = m.group(2).trim();

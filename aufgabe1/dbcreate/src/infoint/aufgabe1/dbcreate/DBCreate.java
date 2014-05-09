@@ -183,8 +183,8 @@ public class DBCreate {
 			
 			st.execute("COMMIT;");
 			st.execute("DROP TABLE tmp;");
-			st.execute("PRAGMA synchronous = ON;");
-			st.execute("PRAGMA journal_mode = DELETE;");
+			/*st.execute("PRAGMA synchronous = ON;");
+			st.execute("PRAGMA journal_mode = DELETE;");*/
 			Log.i(TAG, "Done.");
 			
 		} catch (SQLException ex) {
