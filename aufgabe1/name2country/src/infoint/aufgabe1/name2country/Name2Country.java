@@ -139,6 +139,7 @@ public class Name2Country {
 		//----------------------------------------------------------------------
 		// Do the guessing
 		
+		System.out.println("Guessing. Please stand by...");
 		GuessOperator go = new GuessOperator(INFILE, OUTFILE);
 		go.guessAll();
 		
