@@ -15,12 +15,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.bleuelmedia.javatools.logging.Log;
-import com.sun.xml.internal.ws.util.StringUtils;
 
 public class GuessOperator {
 	

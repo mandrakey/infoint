@@ -24,7 +24,6 @@ package infoint.aufgabe1.name2country;
 import infoint.aufgabe1.name2country.guessing.GuessOperator;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.sql.SQLException;
 
 import com.bleuelmedia.javatools.cliparser.CommandLineOption;
