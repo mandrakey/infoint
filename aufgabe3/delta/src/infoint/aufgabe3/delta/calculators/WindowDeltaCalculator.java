@@ -21,6 +21,8 @@
 
 package infoint.aufgabe3.delta.calculators;
 
+import infoint.aufgabe3.delta.Delta;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -46,7 +48,7 @@ public class WindowDeltaCalculator implements DeltaCalculator {
 	// CLASS METHODS
 	
 	static {
-		inputBufferSize = 1000;
+		inputBufferSize = Delta.INPUTBUFFER_SIZE;
 		
 		delims = new String[4];
 		delims[0] = ",";
