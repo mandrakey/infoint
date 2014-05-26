@@ -44,7 +44,9 @@ public class DeltaCalculationWorker implements Runnable {
 	public void run() {
 		Log.i(TAG, "Begin " + f1.getName() + "," + f2.getName());
 		WindowDeltaCalculator calc = new WindowDeltaCalculator();
-		Delta.addResults(f1, f2, calc.calculateDelta(f1, f2));
+		
+		HashMap<String, Integer> res = calc.calculateDelta(f1, f2);
+		Delta.addResults(f1, f2, res);
 		Log.i(TAG, "Finish " + f1.getName() + "," + f2.getName());
 	}
 

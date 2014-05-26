@@ -21,22 +21,16 @@
 
 package infoint.aufgabe3.delta;
 
-import infoint.aufgabe3.delta.calculators.WindowDeltaCalculator;
-
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.bleuelmedia.javatools.logging.Log;
-import com.bleuelmedia.javatools.util.Pair;
 
 public class Delta {
 
@@ -104,6 +98,7 @@ public class Delta {
 			}
 			
 			out.flush();
+			out.close();
 		} catch (IOException ex) {
 			Log.e(TAG, "Error writing results to file: " + ex.getMessage());
 			System.exit(EXIT_ERROR_OUTFILE);

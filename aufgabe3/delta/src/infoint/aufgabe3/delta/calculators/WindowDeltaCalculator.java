@@ -158,6 +158,7 @@ public class WindowDeltaCalculator implements DeltaCalculator {
 		Iterator<Entry> it1 = buf1.iterator();
 		
 		Entry e, e2;
+		int updates = 0;
 		while (it1.hasNext()) {
 			e = it1.next();
 			Iterator<Entry> it2 = buf2.iterator();
@@ -169,17 +170,20 @@ public class WindowDeltaCalculator implements DeltaCalculator {
 					it2.remove();
 					
 					if (e.content != e2.content) {
-						results.put("UPDATE", results.get("UPDATE") + 1);
-						Log.d(TAG, "Update (" + e.content + " -> " + e2.content + ")\n" + e.original + "\n" + e2.original + "\n");
+						++updates;
 					}
 					break;
 				}
 			}
 		}
+		
+		results.put("UPDATE", results.get("UPDATE") + updates);
 	}
 	
 	private String findDelimeter(String line) throws Exception {
+		@SuppressWarnings("unused")
 		String tmp[];
+		
 		for (String delim : delims) {		
 			if ((tmp = line.split(delim)).length > 1) {
 				return delim;

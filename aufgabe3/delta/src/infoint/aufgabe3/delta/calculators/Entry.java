@@ -21,23 +21,7 @@
 
 package infoint.aufgabe3.delta.calculators;
 
-import java.util.zip.CRC32;
-
-import com.bleuelmedia.javatools.logging.Log;
-
 public class Entry {
-	
-	//==========================================================================
-	// CLASS MEMBERS
-	
-	private static CRC32 hasher;
-	
-	//==========================================================================
-	// CLASS METHODS
-	
-	static {
-		hasher = new CRC32();
-	}
 
 	//==========================================================================
 	// INSTANCE MEMBERS
@@ -65,7 +49,6 @@ public class Entry {
 		
 		content = line.hashCode();
 		original = line;
-		//Log.d("Entry", "Add entry '" + key + "':'" + content + "'");
 	}
 	
 }
