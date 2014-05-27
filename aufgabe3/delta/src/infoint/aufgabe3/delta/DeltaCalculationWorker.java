@@ -21,7 +21,8 @@
 
 package infoint.aufgabe3.delta;
 
-import infoint.aufgabe3.delta.calculators.WindowDeltaCalculator;
+import infoint.aufgabe3.delta.calculators.CachedWindowDeltaCalculator;
+import infoint.aufgabe3.delta.calculators.DeltaCalculator;
 
 import java.io.File;
 import java.util.HashMap;
@@ -43,7 +44,7 @@ public class DeltaCalculationWorker implements Runnable {
 	@Override
 	public void run() {
 		Log.i(TAG, "Begin " + f1.getName() + "," + f2.getName());
-		WindowDeltaCalculator calc = new WindowDeltaCalculator();
+		DeltaCalculator calc = new CachedWindowDeltaCalculator();
 		
 		HashMap<String, Integer> res = calc.calculateDelta(f1, f2);
 		Delta.addResults(f1, f2, res);
