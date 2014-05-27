@@ -30,7 +30,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 
 import com.bleuelmedia.javatools.logging.Log;
 
@@ -60,26 +59,26 @@ public class WindowDeltaCalculator implements DeltaCalculator {
 	//==========================================================================
 	// INSTANCE MEMBERS
 	
-	private ArrayList<Entry> inputBuffer1;
+	private HashMap<Long, Entry> inputBuffer1;
 	private String delim1;
-	private ArrayList<Entry> inputBuffer2;
+	private HashMap<Long, Entry> inputBuffer2;
 	private String delim2;
-	private ArrayList<Entry> agingBuffer1;
-	private ArrayList<Entry> agingBuffer2;
+	private HashMap<Long, Entry> agingBuffer1;
+	private HashMap<Long, Entry> agingBuffer2;
 	private HashMap<String, Integer> results;
 	
 	//==========================================================================
 	// INSTANCE METHODS
 	
 	public WindowDeltaCalculator() {
-		agingBuffer1 = new ArrayList<>();
-		agingBuffer2 = new ArrayList<>();
+		agingBuffer1 = new HashMap<>();
+		agingBuffer2 = new HashMap<>();
 	}
 
 	@Override
 	public HashMap<String, Integer> calculateDelta(File f1, File f2) {
-		inputBuffer1 = new ArrayList<>(inputBufferSize);
-		inputBuffer2 = new ArrayList<>(inputBufferSize);
+		inputBuffer1 = new HashMap<>(inputBufferSize);
+		inputBuffer2 = new HashMap<>(inputBufferSize);
 		
 		// Prepare result map
 		results = new HashMap<>();
@@ -115,11 +114,11 @@ public class WindowDeltaCalculator implements DeltaCalculator {
 			matchBuffers(inputBuffer1, agingBuffer2);
 			matchBuffers(inputBuffer2, agingBuffer1);
 			
-			for (Entry e : inputBuffer1) {
-				agingBuffer1.add(e);
+			for (Entry e : inputBuffer1.values()) {
+				agingBuffer1.put(e.key, e);
 			}
-			for (Entry e : inputBuffer2) {
-				agingBuffer2.add(e);
+			for (Entry e : inputBuffer2.values()) {
+				agingBuffer2.put(e.key, e);
 			}
 			
 			fillInputBuffer(inputBuffer1, in1, delim1);
@@ -139,14 +138,16 @@ public class WindowDeltaCalculator implements DeltaCalculator {
 		return results;
 	}
 	
-	private void fillInputBuffer(ArrayList<Entry> buffer, BufferedReader reader, String delim) {
+	private void fillInputBuffer(HashMap<Long, Entry> buffer, 
+			BufferedReader reader, String delim) {
 		String line;
 		buffer.clear();
 		
 		try {
 			while (buffer.size() < inputBufferSize 
 					&& (line = reader.readLine()) != null) {
-				buffer.add(new Entry(line, delim));
+				Entry e = new Entry(line, delim);
+				buffer.put(e.key, e);
 			}
 		} catch (IOException ex) {
 			Log.e(TAG, "Failed to read line from file: " + ex.getMessage());
@@ -154,27 +155,23 @@ public class WindowDeltaCalculator implements DeltaCalculator {
 		}
 	}
 	
-	private void matchBuffers(ArrayList<Entry> buf1, ArrayList<Entry> buf2) {
-		Iterator<Entry> it1 = buf1.iterator();
-		
-		Entry e, e2;
+	private void matchBuffers(HashMap<Long, Entry> buf1, HashMap<Long, Entry> buf2) {
 		int updates = 0;
-		while (it1.hasNext()) {
-			e = it1.next();
-			Iterator<Entry> it2 = buf2.iterator();
-			while (it2.hasNext()) {
-				e2 = it2.next();
-				
-				if (e.key == e2.key) {
-					it1.remove();
-					it2.remove();
-					
-					if (e.content != e2.content) {
-						++updates;
-					}
-					break;
+		
+		ArrayList<Long> toRemove = new ArrayList<>();
+		for (Entry e : buf1.values()) {
+			if (buf2.containsKey(e.key)) {
+				if (e.content != buf2.get(e.key).content) {
+					++updates;
 				}
+				
+				toRemove.add(e.key);
 			}
+		}
+		
+		for (long key : toRemove) {
+			buf1.remove(key);
+			buf2.remove(key);
 		}
 		
 		results.put("UPDATE", results.get("UPDATE") + updates);
