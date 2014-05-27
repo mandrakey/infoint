@@ -79,7 +79,16 @@ public class Delta {
 		ExecutorService exec = Executors.newFixedThreadPool(NUM_THREADS);
 		for (File f1 : files) {
 			for (File f2 : files) {
-				exec.execute(new DeltaCalculationWorker(f1, f2));
+				if (f1.getAbsolutePath().equals(f2.getAbsolutePath())) {
+					// Same file.
+					HashMap<String, Integer> res = new HashMap<>();
+					res.put("UPDATE", 0);
+					res.put("DELETE", 0);
+					res.put("INSERT", 0);
+					Delta.addResults(f1, f2, res);
+				} else {
+					exec.execute(new DeltaCalculationWorker(f1, f2));
+				}
 			}
 		}
 		

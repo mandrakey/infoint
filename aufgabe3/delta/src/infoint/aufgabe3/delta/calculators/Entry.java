@@ -28,7 +28,7 @@ public class Entry {
 	
 	public long key;
 	public long content;
-	public String original;
+//	public String original;
 	
 	//==========================================================================
 	// INSTANCE METHODS
@@ -48,7 +48,7 @@ public class Entry {
 		key = Long.parseLong(tmp[0]);
 		
 		content = line.hashCode();
-		original = line;
+//		original = line;
 	}
 	
 }
