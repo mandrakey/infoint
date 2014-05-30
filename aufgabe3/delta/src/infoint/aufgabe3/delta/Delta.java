@@ -49,11 +49,11 @@ public class Delta {
 	//==========================================================================
 	// CONFIGURATION
 	
-	//public static final String WORKDIR = "/local/II2014/uebung3/";
-	public static final String WORKDIR = "./";
+	public static final String WORKDIR = "/local/II2014/uebung3/";
+	//public static final String WORKDIR = "./";
 	public static final String OUTFILE = WORKDIR + "horst.txt";
 	public static final int INPUTBUFFER_SIZE = 10000;
-	public static final int NUM_THREADS = 4;
+	public static final int NUM_THREADS = 12;
 	
 	private static HashMap<String, HashMap<String, Integer>> results;
 	private static ArrayList<String> DONE_FILES;
