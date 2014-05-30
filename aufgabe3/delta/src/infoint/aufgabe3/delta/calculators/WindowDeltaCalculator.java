@@ -95,7 +95,6 @@ public class WindowDeltaCalculator implements DeltaCalculator {
 			in2 = new BufferedReader(new FileReader(f2));
 			delim1 = findDelimeter(in1.readLine());
 			delim2 = findDelimeter(in2.readLine());
-			Log.d(TAG, "Delim1 = '" + delim1 + "', delim2 = '" + delim2 + "'");
 		} catch (FileNotFoundException ex) {
 			Log.e(TAG, "Cannot find a file: " + ex.getMessage());
 			return null;
@@ -107,8 +106,6 @@ public class WindowDeltaCalculator implements DeltaCalculator {
 		// Parse files, window mode
 		fillInputBuffer(inputBuffer1, in1, delim1);
 		fillInputBuffer(inputBuffer2, in2, delim2);
-		Log.d(TAG, "inputBuffer1 size: " + inputBuffer1.size());
-		Log.d(TAG, "inputBuffer2 size: " + inputBuffer2.size());
 		while (!inputBuffer1.isEmpty() && !inputBuffer2.isEmpty()) {
 			matchBuffers(inputBuffer1, inputBuffer2);
 			matchBuffers(inputBuffer1, agingBuffer2);
