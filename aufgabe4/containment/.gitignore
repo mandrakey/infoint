@@ -1,1 +1,12 @@
-/Debug
+# Qt Creator project files
+*.pro*
+
+# Visual Studio 2013 project files
+Debug/
+Release/
+*.sdf
+*.sln
+*.suo
+*.vcxproj
+*.vcxproj.filters
+*.opensdf
