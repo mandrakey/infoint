@@ -5,6 +5,7 @@ CONFIG -= qt
 
 QMAKE_CXXFLAGS += -std=c++11
 QMAKE_CXXFLAGS += -Wextra
+QMAKE_CXXFLAGS += -Weffc++
 
 SOURCES += containment.cpp \
     algo/DepthFirst.cpp \
