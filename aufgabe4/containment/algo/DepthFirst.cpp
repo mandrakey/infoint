@@ -1,6 +1,7 @@
 #include "DepthFirst.hpp"
+#include "model/Query.hpp"
 
-bool DepthFirst::matches(const Query& q1, const Query& q2)
+bool DepthFirst::matches(const QueryPtr q1, const QueryPtr q2)
 {
 	return false;
 }

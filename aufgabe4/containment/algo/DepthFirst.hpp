@@ -6,7 +6,7 @@
 class DepthFirst : public Algorithm
 {
 public:
-	virtual bool matches(const Query& q1, const Query& q2);
+    virtual bool matches(const QueryPtr q1, const QueryPtr q2);
 };
 
 #endif /* DEPTHFIRST_HPP_ */
