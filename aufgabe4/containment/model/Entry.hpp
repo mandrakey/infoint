@@ -3,8 +3,8 @@
 
 #include <vector>
 using std::vector;
-#include <string>
-using std::string;
+
+class string;
 
 class Entry {
 public:

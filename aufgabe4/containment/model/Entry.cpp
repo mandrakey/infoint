@@ -1,5 +1,7 @@
 #include "Entry.hpp"
 
+#include <string>
+
 Entry::Entry(const string& line) :
 	mName('-'), mVariables(), mConstants()
 {
