@@ -7,6 +7,7 @@
 using std::vector;
 #include <string>
 using std::string;
+#include <iostream>
 
 class Query {
 private:
@@ -17,7 +18,9 @@ public:
 	Query(const string& line);
 
 	vector<char> relations() const;
-	vector<Entry>& entries();
+    vector<Entry>& entries();
 };
+
+std::ostream& operator<<(std::ostream& lhs, Query& rhs);
 
 #endif /* QUERY_HPP_ */

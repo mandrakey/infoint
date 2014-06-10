@@ -3,12 +3,13 @@
 
 #include <vector>
 using std::vector;
-
-class string;
+#include <iostream>
+#include <string>
+using std::string;
 
 class Entry {
 public:
-	Entry(const string& line);
+    Entry(string& line);
 
 	char name() const;
 	vector<char> variables() const;
@@ -19,5 +20,7 @@ private:
 	vector<char> mVariables;
 	vector<char> mConstants;
 };
+
+std::ostream& operator<<(std::ostream& lhs, const Entry& rhs);
 
 #endif /* ENTRY_HPP_ */
