@@ -11,7 +11,8 @@ SOURCES += containment.cpp \
     algo/DepthFirst.cpp \
     model/Entry.cpp \
     model/Query.cpp \
-    model/FileParser.cpp
+    model/FileParser.cpp \
+    main.cpp
 
 HEADERS += \
     algo/Algorithm.hpp \
