@@ -19,7 +19,7 @@ Entry::Entry(string& line) :
 
     char* buf = strtok(tmp, ",");
     while (buf != 0) {
-        if (*buf <= 'a') {
+        if (*buf >= 'a') {
             mConstants.push_back(*buf);
         } else {
             mVariables.push_back(*buf);

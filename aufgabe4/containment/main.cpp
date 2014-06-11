@@ -9,6 +9,8 @@ using std::cout;
 using std::endl;
 #include <string>
 using std::string;
+#include <vector>
+using std::vector;
 
 bool parseArgs(int argc, char* argv[]) throw (const char*);
 
@@ -34,6 +36,11 @@ int main(int argc, char* argv[])
 
     // Read input file
     FileParser parser(c.inputFile());
+    if (!parser.isOpen()) {
+        cout << "Failed to open input file at '" << c.inputFile() << "'." << endl;
+        return -1;
+    }
+
     while (true) {
         pair<QueryPtr, QueryPtr> p = parser.getQueryPair();
         if (p.first.get() == 0 || p.second.get() == 0) {

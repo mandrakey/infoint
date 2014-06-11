@@ -34,7 +34,6 @@ Query::Query(const string& line) :
             if (c == ')') {
                 inEntry = false;
                 string s = tmp.str();
-                std::cout << "Getting entry with '" << s << "'" << endl;
                 Entry e(s);
                 mEntries.push_back(e);
                 tmp.str("");

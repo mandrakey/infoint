@@ -23,6 +23,8 @@ public:
 
     pair<QueryPtr, QueryPtr> getQueryPair() throw (int);
 
+    bool isOpen() const;
+
 private:
     ifstream mInputStream;
 };

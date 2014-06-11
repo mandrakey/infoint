@@ -5,6 +5,9 @@
 #include <string>
 using std::string;
 #include <fstream>
+#include <iostream>
+using std::cout;
+using std::endl;
 
 const int FileParser::ERR_EOF = 0;
 
@@ -24,11 +27,11 @@ FileParser::~FileParser()
 
 pair<QueryPtr, QueryPtr> FileParser::getQueryPair() throw (int)
 {
+    pair<QueryPtr, QueryPtr> p;
     if (mInputStream.eof()) {
-        throw ERR_EOF;
+        return p;
     }
 
-    pair<QueryPtr, QueryPtr> p;
     char in[INPUT_BUFFER];
 
     //--------------------------------------------------------------------------
@@ -36,6 +39,7 @@ pair<QueryPtr, QueryPtr> FileParser::getQueryPair() throw (int)
 
     // 1. Comment
     mInputStream.getline(in, INPUT_BUFFER);
+    cout << "Comment = " << in << endl;
 
     // 2. + 3. : Two queries
     Query* qtmp = 0;
@@ -47,8 +51,15 @@ pair<QueryPtr, QueryPtr> FileParser::getQueryPair() throw (int)
     qtmp = new Query(string(in));
     p.second = QueryPtr(qtmp);
 
+
     // todo: Skip 4th line...
     mInputStream.getline(in, INPUT_BUFFER);
+    cout << "4th = " << in << endl;
 
     return p;
+}
+
+bool FileParser::isOpen() const
+{
+    return mInputStream.is_open();
 }
