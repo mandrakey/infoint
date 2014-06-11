@@ -24,23 +24,15 @@ int main(int argc, char* argv[])
     }
 
     Containment c;
-    cout << "Environment" << endl <<
-            "===========" << endl <<
-            "Input:  " << c.inputFile() << endl <<
-            "Output: " << c.outputFile() << endl <<
-            "Debug:  " << c.debug() << endl << endl;
 
-//    string a = "q(b)-r(b,b),s(c,c),t(i,i).";
-//    Query q(a);
-//    cout << q << endl;
-
-    // Read input file
+    // Check input file
     FileParser parser(c.inputFile());
     if (!parser.isOpen()) {
         cout << "Failed to open input file at '" << c.inputFile() << "'." << endl;
         return -1;
     }
 
+    // Read input file
     while (true) {
         pair<QueryPtr, QueryPtr> p = parser.getQueryPair();
         if (p.first.get() == 0 || p.second.get() == 0) {
