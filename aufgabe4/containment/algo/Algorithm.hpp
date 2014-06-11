@@ -2,6 +2,9 @@
 #define ALGORITHM_HPP_
 
 #include "containment.hpp"
+#include "model/Query.hpp"
+#include <memory>
+using std::unique_ptr;
 
 class Algorithm
 {

@@ -2,6 +2,7 @@
 #include "algo/DepthFirst.hpp"
 #include "model/Query.hpp"
 #include "model/Entry.hpp"
+#include "model/FileParser.hpp"
 
 #include <iostream>
 using std::cout;
@@ -30,6 +31,21 @@ int main(int argc, char* argv[])
 //    string a = "q(b)-r(b,b),s(c,c),t(i,i).";
 //    Query q(a);
 //    cout << q << endl;
+
+    // Read input file
+    FileParser parser(c.inputFile());
+    while (true) {
+        pair<QueryPtr, QueryPtr> p = parser.getQueryPair();
+        if (p.first.get() == 0 || p.second.get() == 0) {
+            break;
+        }
+
+        c.algorithm()->matches(std::move(p.first), std::move(p.second));
+        // Note: p.first and p.second are not copied, but MOVED into
+        // the algorithm method (necessary because of
+        // unique_ptr<Query> (cannot be copied!)
+    }
+
     return 0;
 }
 
@@ -41,6 +57,7 @@ bool parseArgs(int argc, char* argv[]) throw (const char*)
 
     string inputFile;
     string outputFile;
+    string algorithm;
     bool debug = false;
 
     for (int i = 1; i < argc; ++i) {
@@ -61,6 +78,10 @@ bool parseArgs(int argc, char* argv[]) throw (const char*)
             }
             outputFile = string(argv[i+1]);
             break;
+        case 'a':
+            algorithm = (argc > i && argv[i+1][0] != '-')
+                    ? string(argv[i+1]) : "";
+            break;
         case 'd':
             debug = true;
             break;
@@ -69,6 +90,6 @@ bool parseArgs(int argc, char* argv[]) throw (const char*)
         }
     }
 
-    const Containment c(inputFile, outputFile, debug);
+    const Containment c(inputFile, outputFile, algorithm, debug);
     return true;
 }
