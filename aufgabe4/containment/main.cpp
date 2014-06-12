@@ -1,7 +1,7 @@
 #include "containment.hpp"
 #include "algo/DepthFirst.hpp"
 #include "model/Query.hpp"
-#include "model/Entry.hpp"
+#include "model/Literal.hpp"
 #include "model/FileParser.hpp"
 
 #include <iostream>

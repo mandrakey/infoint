@@ -7,13 +7,15 @@ using std::vector;
 #include <string>
 using std::string;
 
-class Entry {
+class Literal {
 public:
-    Entry(string& line);
+    Literal(string& line);
 
 	char name() const;
 	vector<char> variables() const;
+    int variableCount() const;
 	vector<char> constants() const;
+    int constantsCount() const;
 
 private:
 	char mName;
@@ -21,6 +23,6 @@ private:
 	vector<char> mConstants;
 };
 
-std::ostream& operator<<(std::ostream& lhs, const Entry& rhs);
+std::ostream& operator<<(std::ostream& lhs, const Literal& rhs);
 
 #endif /* ENTRY_HPP_ */

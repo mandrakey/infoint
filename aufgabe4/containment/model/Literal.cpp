@@ -1,4 +1,4 @@
-#include "Entry.hpp"
+#include "Literal.hpp"
 
 #include <string>
 using std::string;
@@ -9,7 +9,7 @@ using std::stringstream;
 #include <iterator>
 #include <cstring>
 
-Entry::Entry(string& line) :
+Literal::Literal(string& line) :
 	mName('-'), mVariables(), mConstants()
 {   
     mName = line[0];
@@ -31,24 +31,34 @@ Entry::Entry(string& line) :
     delete tmp;
 }
 
-char Entry::name() const
+char Literal::name() const
 {
 	return mName;
 }
 
-vector<char> Entry::variables() const
+vector<char> Literal::variables() const
 {
 	return vector<char>(mVariables);
 }
 
-vector<char> Entry::constants() const
+int Literal::variableCount() const
+{
+    return mVariables.size();
+}
+
+vector<char> Literal::constants() const
 {
 	return vector<char>(mConstants);
 }
 
-std::ostream& operator<<(std::ostream& lhs, const Entry& rhs)
+int Literal::constantsCount() const
 {
-    lhs << "====" << endl << "Entry" << endl << "----" << endl <<
+    return mConstants.size();
+}
+
+std::ostream& operator<<(std::ostream& lhs, const Literal& rhs)
+{
+    lhs << "====" << endl << "Literal" << endl << "----" << endl <<
            "Name: " << rhs.name() << endl << endl <<
            "Variables: ";
 

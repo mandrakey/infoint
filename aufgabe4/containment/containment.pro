@@ -9,15 +9,15 @@ QMAKE_CXXFLAGS += -Weffc++
 
 SOURCES += containment.cpp \
     algo/DepthFirst.cpp \
-    model/Entry.cpp \
     model/Query.cpp \
     model/FileParser.cpp \
-    main.cpp
+    main.cpp \
+    model/Literal.cpp
 
 HEADERS += \
     algo/Algorithm.hpp \
     algo/DepthFirst.hpp \
-    model/Entry.hpp \
     model/Query.hpp \
     model/FileParser.hpp \
-    containment.hpp
+    containment.hpp \
+    model/Literal.hpp

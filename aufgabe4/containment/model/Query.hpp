@@ -1,7 +1,7 @@
 #ifndef QUERY_HPP_
 #define QUERY_HPP_
 
-#include "Entry.hpp"
+#include "Literal.hpp"
 
 #include <vector>
 using std::vector;
@@ -12,13 +12,13 @@ using std::string;
 class Query {
 private:
 	vector<char> mRelations;
-	vector<Entry> mEntries;
+    vector<Literal> mLiterals;
 
 public:
 	Query(const string& line);
 
 	vector<char> relations() const;
-    vector<Entry>& entries();
+    vector<Literal>& literals();
 };
 
 std::ostream& operator<<(std::ostream& lhs, Query& rhs);

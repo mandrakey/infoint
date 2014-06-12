@@ -1,5 +1,5 @@
 #include "Query.hpp"
-#include "Entry.hpp"
+#include "Literal.hpp"
 
 #include <algorithm>
 #include <sstream>
@@ -8,7 +8,7 @@ using std::stringstream;
 using std::endl;
 
 Query::Query(const string& line) :
-	mRelations(), mEntries()
+    mRelations(), mLiterals()
 {
     string l = line.substr(line.find('-') + 1);
 
@@ -34,8 +34,8 @@ Query::Query(const string& line) :
             if (c == ')') {
                 inEntry = false;
                 string s = tmp.str();
-                Entry e(s);
-                mEntries.push_back(e);
+                Literal e(s);
+                mLiterals.push_back(e);
                 tmp.str("");
             }
         }
@@ -47,9 +47,9 @@ vector<char> Query::relations() const
 	return vector<char>(mRelations);
 }
 
-vector<Entry>& Query::entries()
+vector<Literal>& Query::literals()
 {
-    return mEntries;
+    return mLiterals;
 }
 
 std::ostream& operator<<(std::ostream& lhs, Query& rhs)
@@ -60,7 +60,7 @@ std::ostream& operator<<(std::ostream& lhs, Query& rhs)
         lhs << c << ", ";
     }
     lhs << endl << endl << "Entries:" << endl;
-    for (const Entry& e : rhs.entries()) {
+    for (const Literal& e : rhs.literals()) {
         lhs << e << endl << endl;
     }
     lhs << "========";
