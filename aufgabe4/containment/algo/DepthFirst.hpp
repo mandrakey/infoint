@@ -31,6 +31,10 @@ private:
         vector<Literal*> mSources;
     };
 
+    vector<Literal*> getPotentialTargets(Literal* l, vector<Literal>& targets) const;
+    bool mappingCompatible(ContainmentMapping h, Literal* l, Literal* g) const;
+    ContainmentMapping createMapping(Literal* l, Literal* g) const;
+
 };
 
 #endif /* DEPTHFIRST_HPP_ */

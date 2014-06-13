@@ -42,9 +42,7 @@ bool DepthFirst::matches(const QueryPtr q1, const QueryPtr q2)
     }
 
     Literal* l = L.at(0);
-    vector<Literal*> H;
-    // todo: Implement getPotentialTargets
-    //vector<shared_ptr<const Literal> > H = getPotentialTargets(l, q2->literals());
+    vector<Literal*> H = getPotentialTargets(l, q2->literals());
 
     L.erase(std::find(L.begin(), L.end(), l));
     R.push(StackElement(ContainmentMapping(), H, L));
@@ -65,16 +63,14 @@ bool DepthFirst::matches(const QueryPtr q1, const QueryPtr q2)
             R.push(StackElement(h, H_new, L));
 
             // Check compatibility of h with mapping for g
-            bool compat = true;
             // todo: Implement mappingCompatible
-            //bool compat = mappingCompatible(h, l, g);
+            bool compat = mappingCompatible(h, l, g);
             if (compat) {
                 if (L.empty()) {
                     return true;
                 } else {
                     l = L.front();
-                    //vector<shared_ptr<Literal> > H1 = getPotentialTargets(l, q2->literals());
-                    vector<Literal*> H1;
+                    vector<Literal*> H1 = getPotentialTargets(l, q2->literals());
                     vector<Literal*> Ln(L);
                     Ln.erase(std::find(Ln.begin(), Ln.end(), l));
                     R.push(StackElement(h, H1, Ln));
@@ -84,4 +80,47 @@ bool DepthFirst::matches(const QueryPtr q1, const QueryPtr q2)
     } while (!R.empty());
 
 	return false;
+}
+
+vector<Literal*> DepthFirst::getPotentialTargets(Literal* l,
+                                                 vector<Literal>& targets) const
+{
+    vector<Literal*> v;
+    for(Literal& t : targets) {
+        if (t.constantsCount() == l->constantsCount()
+                && t.variableCount() == l->variableCount()) {
+            v.push_back(&t);
+        }
+    }
+
+    return v;
+}
+
+bool DepthFirst::mappingCompatible(ContainmentMapping h, Literal* l,
+                                   Literal* g) const
+{
+    // ContainmentMapping => vector<pair<char,char>>
+    ContainmentMapping lg = createMapping(l, g);
+    // 2. Check partial mapping against h
+    throw "not implemented";
+}
+
+ContainmentMapping DepthFirst::createMapping(Literal* l, Literal* g) const
+{
+    ContainmentMapping m;
+    for (int i = 0; i < l->variables().size(); ++i) {
+        pair<char,char> p;
+        p.first = l->variables().at(i);
+        p.second = g->variables().at(i);
+        m.push_back(p);
+    }
+
+    for (int i = 0; i < l->constants().size(); ++i) {
+        pair<char,char> p;
+        p.first = l->constants().at(i);
+        p.second = g->constants().at(i);
+        m.push_back(p);
+    }
+
+    return m;
 }
