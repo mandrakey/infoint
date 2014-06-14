@@ -122,8 +122,7 @@ bool DepthFirst::mappingCompatible(ContainmentMapping h, ContainmentMapping g) c
         for (pair<char, char> pg : g) {
             if (c.isVariable(ph.first) && c.isVariable(pg.first)
                     && c.isVariable(ph.second) && c.isVariable(pg.second)
-                    && ((ph.first == pg.first && ph.second != pg.second)
-                        || (ph.first != pg.first && ph.second == pg.second))) {
+                    && ((ph.first == pg.first && ph.second != pg.second))) {
                 // Prevents: a->b, a->c
                 return false;
             } else if (c.isConstant(ph.first) && c.isConstant(pg.first)
