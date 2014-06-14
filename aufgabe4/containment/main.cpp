@@ -62,10 +62,6 @@ int main(int argc, char* argv[])
         // Note: p.first and p.second are not copied, but MOVED into
         // the algorithm method (necessary because of
         // unique_ptr<Query> (cannot be copied!)
-
-        if (++i == 3) {
-            break;
-        }
     }
 
     out.close();

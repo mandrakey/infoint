@@ -11,6 +11,8 @@ using std::endl;
 using std::vector;
 #include <algorithm>
 #include <sstream>
+#include <string>
+using std::string;
 
 //==============================================================================
 // StackElement
@@ -34,11 +36,11 @@ string DepthFirst::TAG("DepthFirst");
 
 bool DepthFirst::matches(const QueryPtr q1, const QueryPtr q2)
 {
-    cout << q1->mOriginal << " teil von " << q2->mOriginal << endl;
+    //cout << q1->mOriginal << " teil von " << q2->mOriginal << endl;
     // Prepare variables
     stack<StackElement> R;
     vector<Literal*> L;
-    for (Literal& l : q1->literals()) {
+    for (Literal& l : q2->literals()) {
         L.push_back(&l);
     }
 
@@ -47,7 +49,7 @@ bool DepthFirst::matches(const QueryPtr q1, const QueryPtr q2)
     }
 
     Literal* l = L.at(0);
-    vector<Literal*> H = getPotentialTargets(l, q2->literals());
+    vector<Literal*> H = getPotentialTargets(l, q1->literals());
 
     L.erase(std::find(L.begin(), L.end(), l));
     R.push(StackElement(ContainmentMapping(), H, L));
@@ -63,20 +65,26 @@ bool DepthFirst::matches(const QueryPtr q1, const QueryPtr q2)
 
         if (!H.empty()) {
             Literal* g = H.front();
-            vector<Literal*> H_new = H;
-            H_new.erase(std::find(H_new.begin(), H_new.end(), g));
-            R.push(StackElement(h, H_new, L));
+            H.erase(std::find(H.begin(), H.end(), g));
+//            vector<Literal*> H_new = H;
+//            H_new.erase(std::find(H_new.begin(), H_new.end(), g));
+            R.push(StackElement(h, H, L));
 
             // Check compatibility of h with mapping for g
+            ContainmentMapping gmap;
+            gmap = createMapping(l,g);
+
             Log::d(TAG, string("h = ").append(cmToString(h)));
-            ContainmentMapping gmap = createMapping(l,g);
+            Log::d(TAG, string("gmap = ").append(cmToString(gmap)));
             bool compat = mappingCompatible(h, gmap);
             if (compat) {
                 if (L.empty()) {
+                    h = mergeMappings(h, gmap);
+                    Log::d(TAG, string("Final map = ").append(cmToString(h)));
                     return true;
                 } else {
                     l = L.front();
-                    vector<Literal*> H1 = getPotentialTargets(l, q2->literals());
+                    vector<Literal*> H1 = getPotentialTargets(l, q1->literals());
                     vector<Literal*> Ln(L);
                     Ln.erase(std::find(Ln.begin(), Ln.end(), l));
                     ContainmentMapping hnew = mergeMappings(h, gmap);
@@ -110,7 +118,7 @@ bool DepthFirst::mappingCompatible(ContainmentMapping h, ContainmentMapping g) c
     for (pair<char, char> ph : h) {
         for (pair<char, char> pg : g) {
             if (c.isVariable(ph.first) && c.isVariable(pg.first)
-                    && (ph.first == pg.first && ph.second != pg.second)) {
+                    && (ph.first == pg.first || ph.second == pg.second)) {
                 // Prevents: a->b, a->c
                 return false;
             } else if (c.isConstant(ph.first) && c.isConstant(pg.first)
@@ -128,14 +136,20 @@ bool DepthFirst::mappingCompatible(ContainmentMapping h, ContainmentMapping g) c
     return true;
 }
 
-ContainmentMapping DepthFirst::createMapping(Literal* l, Literal* g) const
+ContainmentMapping DepthFirst::createMapping(Literal* l, Literal* g) const throw (string)
 {
-    ContainmentMapping m;
+    ContainmentMapping m, n;
     for (size_t i = 0; i < l->variables().size(); ++i) {
         pair<char,char> p;
         p.first = l->variables().at(i);
         p.second = g->variables().at(i);
         m.push_back(p);
+
+//        if (!mappingCompatible(m, n)) {
+//            cout << "Mapping not found: " << cmToString(m) << " || " << cmToString(n) << endl;
+//            throw string();
+//        }
+//        n = m;
     }
 
     for (size_t i = 0; i < l->constants().size(); ++i) {
@@ -143,6 +157,11 @@ ContainmentMapping DepthFirst::createMapping(Literal* l, Literal* g) const
         p.first = l->constants().at(i);
         p.second = g->constants().at(i);
         m.push_back(p);
+
+//        if (!mappingCompatible(m, n)) {
+//            throw string(std::to_string(p.first)).append(" -> ").append(std::to_string(p.second));
+//        }
+//        n = m;
     }
 
     return m;

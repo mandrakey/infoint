@@ -39,7 +39,7 @@ private:
 public: // todo: remove this "public"
     vector<Literal*> getPotentialTargets(Literal* l, vector<Literal>& targets) const;
     bool mappingCompatible(ContainmentMapping h, ContainmentMapping g) const;
-    ContainmentMapping createMapping(Literal* l, Literal* g) const;
+    ContainmentMapping createMapping(Literal* l, Literal* g) const throw(string);
     ContainmentMapping mergeMappings(ContainmentMapping h, ContainmentMapping g) const;
 
 };
