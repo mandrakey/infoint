@@ -11,6 +11,7 @@ Query::Query(const string& line) :
     mRelations(), mLiterals()
 {
     string l = line.substr(line.find('-') + 1);
+    mOriginal = l;
 
     bool inEntry = false;
     stringstream tmp;

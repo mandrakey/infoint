@@ -41,6 +41,16 @@ Containment::Containment(const string& inputFile, const string& outputFile,
     INITIALIZED = true;
 }
 
+bool Containment::isConstant(char c) const
+{
+    return (c >= 'A' && c < 'a');
+}
+
+bool Containment::isVariable(char c) const
+{
+    return (c >= 'a' && c <= 'z');
+}
+
 const string& Containment::inputFile() const
 {
     return INPUT_FILE;

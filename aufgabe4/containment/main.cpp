@@ -3,10 +3,13 @@
 #include "model/Query.hpp"
 #include "model/Literal.hpp"
 #include "model/FileParser.hpp"
+#include "bmlib/log.hpp"
 
 #include <iostream>
 using std::cout;
 using std::endl;
+#include <fstream>
+using std::ofstream;
 #include <string>
 using std::string;
 #include <vector>
@@ -17,6 +20,7 @@ bool parseArgs(int argc, char* argv[]) throw (const char*);
 
 int main(int argc, char* argv[])
 {
+    Log::setDebug(true);
 //    test();
 //    return -99;
 
@@ -36,18 +40,35 @@ int main(int argc, char* argv[])
         return -1;
     }
 
+    // Prepare writing output file
+    ofstream out(c.outputFile());
+    if (!out.is_open()) {
+        Log::e(string("main"), string("Failed to open output file at '")
+               .append(c.outputFile()).append("'."));
+        return -1;
+    }
+
     // Read input file
+    int i = 0;
     while (true) {
         pair<QueryPtr, QueryPtr> p = parser.getQueryPair();
         if (p.first.get() == 0 || p.second.get() == 0) {
             break;
         }
 
-        c.algorithm()->matches(std::move(p.first), std::move(p.second));
+        bool match = c.algorithm()->matches(std::move(p.first), std::move(p.second));
+        cout << "Match? " << match << endl;
+        out << ((match) ? "true" : "false") << endl;
         // Note: p.first and p.second are not copied, but MOVED into
         // the algorithm method (necessary because of
         // unique_ptr<Query> (cannot be copied!)
+
+        if (++i == 3) {
+            break;
+        }
     }
+
+    out.close();
 
     return 0;
 }
@@ -99,12 +120,21 @@ bool parseArgs(int argc, char* argv[]) throw (const char*)
 
 void test()
 {
+    Log::d("main", "Test output");
     DepthFirst df;
     string l1("a(a,b,C)");
-    string l2("b(x,y,D)");
+    string l2("b(x,y,C)");
+    string l3("c(e,b,C)");
+    string l4("d(d,w,C)");
     Literal a(l1);
     Literal b(l2);
+    Literal c(l3);
+    Literal d(l4);
 
     ContainmentMapping m = df.createMapping(&a,&b);
-    cout << m << endl;
+    ContainmentMapping m2 = df.createMapping(&c, &d);
+    cout << "Map 1: " << m << endl;
+    cout << "Map 2: " << m2 << endl;
+
+    cout << "Compatible? " << df.mappingCompatible(m, m2) << endl;
 }

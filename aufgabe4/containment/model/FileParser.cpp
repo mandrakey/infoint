@@ -40,6 +40,9 @@ pair<QueryPtr, QueryPtr> FileParser::getQueryPair() throw (int)
     // 1. Comment
     mInputStream.getline(in, INPUT_BUFFER);
     cout << "Comment = " << in << endl;
+    if (string(in).empty()) {
+        return p;
+    }
 
     // 2. + 3. : Two queries
     Query* qtmp = 0;

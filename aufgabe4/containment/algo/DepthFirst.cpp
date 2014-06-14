@@ -2,6 +2,7 @@
 #include "model/Query.hpp"
 #include "model/Literal.hpp"
 #include "containment.hpp"
+#include "bmlib/log.hpp"
 
 #include <iostream>
 using std::cout;
@@ -29,8 +30,11 @@ DepthFirst::StackElement::StackElement(ContainmentMapping cm,
 //==============================================================================
 // DepthFirst
 
+string DepthFirst::TAG("DepthFirst");
+
 bool DepthFirst::matches(const QueryPtr q1, const QueryPtr q2)
 {
+    cout << q1->mOriginal << " teil von " << q2->mOriginal << endl;
     // Prepare variables
     stack<StackElement> R;
     vector<Literal*> L;
@@ -64,8 +68,9 @@ bool DepthFirst::matches(const QueryPtr q1, const QueryPtr q2)
             R.push(StackElement(h, H_new, L));
 
             // Check compatibility of h with mapping for g
-            // todo: Implement mappingCompatible
-            bool compat = mappingCompatible(h, l, g);
+            Log::d(TAG, string("h = ").append(cmToString(h)));
+            ContainmentMapping gmap = createMapping(l,g);
+            bool compat = mappingCompatible(h, gmap);
             if (compat) {
                 if (L.empty()) {
                     return true;
@@ -74,7 +79,8 @@ bool DepthFirst::matches(const QueryPtr q1, const QueryPtr q2)
                     vector<Literal*> H1 = getPotentialTargets(l, q2->literals());
                     vector<Literal*> Ln(L);
                     Ln.erase(std::find(Ln.begin(), Ln.end(), l));
-                    R.push(StackElement(h, H1, Ln));
+                    ContainmentMapping hnew = mergeMappings(h, gmap);
+                    R.push(StackElement(hnew, H1, Ln));
                 }
             }
         }
@@ -97,26 +103,42 @@ vector<Literal*> DepthFirst::getPotentialTargets(Literal* l,
     return v;
 }
 
-bool DepthFirst::mappingCompatible(ContainmentMapping h, Literal* l,
-                                   Literal* g) const
+bool DepthFirst::mappingCompatible(ContainmentMapping h, ContainmentMapping g) const
 {
-    // ContainmentMapping => vector<pair<char,char>>
-    ContainmentMapping lg = createMapping(l, g);
-    // 2. Check partial mapping against h
-    throw "not implemented";
+    Containment c;
+
+    for (pair<char, char> ph : h) {
+        for (pair<char, char> pg : g) {
+            if (c.isVariable(ph.first) && c.isVariable(pg.first)
+                    && (ph.first == pg.first && ph.second != pg.second)) {
+                // Prevents: a->b, a->c
+                return false;
+            } else if (c.isConstant(ph.first) && c.isConstant(pg.first)
+                       && (ph.first != ph.second
+                           || ph.first != pg.first || ph.second != pg.second)) {
+                /*cout << ph.first << " != " << ph.second << " || " <<
+                        ph.first << " != " << plg.first << " || " <<
+                        ph.second << " != " << plg.second << endl;*/
+                // Prevents: A->B
+                return false;
+            }
+        }
+    }
+
+    return true;
 }
 
 ContainmentMapping DepthFirst::createMapping(Literal* l, Literal* g) const
 {
     ContainmentMapping m;
-    for (int i = 0; i < l->variables().size(); ++i) {
+    for (size_t i = 0; i < l->variables().size(); ++i) {
         pair<char,char> p;
         p.first = l->variables().at(i);
         p.second = g->variables().at(i);
         m.push_back(p);
     }
 
-    for (int i = 0; i < l->constants().size(); ++i) {
+    for (size_t i = 0; i < l->constants().size(); ++i) {
         pair<char,char> p;
         p.first = l->constants().at(i);
         p.second = g->constants().at(i);
@@ -126,18 +148,40 @@ ContainmentMapping DepthFirst::createMapping(Literal* l, Literal* g) const
     return m;
 }
 
+ContainmentMapping DepthFirst::mergeMappings(ContainmentMapping h, ContainmentMapping g) const
+{
+    if (h.empty()) {
+        return g;
+    } else if (g.empty()) {
+        return h;
+    }
+
+    ContainmentMapping n;
+    for (auto m : h) {
+        n.push_back(m);
+    }
+    for (auto m : g) {
+        n.push_back(m);
+    }
+    return n;
+}
+
 //==============================================================================
 // NON-CLASS FUNCTIONS
 
 std::ostream& operator<<(std::ostream& lhs, const ContainmentMapping& rhs)
 {
+    lhs << cmToString(rhs).c_str();
+    return lhs;
+}
+
+string cmToString(const ContainmentMapping& cm)
+{
     std::stringstream str;
     str << "[ ";
-    for (pair<char, char> p : rhs) {
+    for (pair<char, char> p : cm) {
         str << p.first << "->" << p.second << ", ";
     }
     str << "]";
-
-    lhs << str.str();
-    return lhs;
+    return str.str();
 }

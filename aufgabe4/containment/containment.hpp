@@ -22,6 +22,9 @@ public:
     Containment(const string& inputFile, const string& outputFile,
                 string algorithm, bool debug) throw (const char*);
 
+    bool isConstant(char c) const;
+    bool isVariable(char c) const;
+
     const string& inputFile() const;
     const string& outputFile() const;
     shared_ptr<Algorithm> algorithm() const;

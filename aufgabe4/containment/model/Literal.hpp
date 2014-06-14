@@ -9,6 +9,8 @@ using std::string;
 
 class Literal {
 public:
+    static string TAG;
+
     Literal(string& line);
 
 	char name() const;

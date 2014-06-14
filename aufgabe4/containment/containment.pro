@@ -12,7 +12,8 @@ SOURCES += containment.cpp \
     model/Query.cpp \
     model/FileParser.cpp \
     main.cpp \
-    model/Literal.cpp
+    model/Literal.cpp \
+    bmlib/log.cpp
 
 HEADERS += \
     algo/Algorithm.hpp \
@@ -20,4 +21,5 @@ HEADERS += \
     model/Query.hpp \
     model/FileParser.hpp \
     containment.hpp \
-    model/Literal.hpp
+    model/Literal.hpp \
+    bmlib/log.hpp

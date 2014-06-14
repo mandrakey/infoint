@@ -1,4 +1,6 @@
 #include "Literal.hpp"
+#include "containment.hpp"
+#include "../bmlib/log.hpp"
 
 #include <string>
 using std::string;
@@ -9,9 +11,12 @@ using std::stringstream;
 #include <iterator>
 #include <cstring>
 
+string Literal::TAG("Literal");
+
 Literal::Literal(string& line) :
 	mName('-'), mVariables(), mConstants()
 {   
+    Containment c;
     mName = line[0];
     line = line.substr(line.find("(") + 1, line.find(")") - 2).c_str();
     char* tmp = new char[line.length() + 1];
@@ -19,10 +24,12 @@ Literal::Literal(string& line) :
 
     char* buf = strtok(tmp, ",");
     while (buf != 0) {
-        if (*buf >= 'a') {
+        if (c.isConstant(*buf)) {
             mConstants.push_back(*buf);
-        } else {
+        } else if (c.isVariable(*buf)) {
             mVariables.push_back(*buf);
+        } else {
+            Log::w(TAG, string("Character '").append(buf).append("' not recognized."));
         }
         buf = strtok(0, ",");
     }
