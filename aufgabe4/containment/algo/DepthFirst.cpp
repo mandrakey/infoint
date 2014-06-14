@@ -51,10 +51,9 @@ bool DepthFirst::matches(const QueryPtr q1, const QueryPtr q2)
     Literal* l = L.at(0);
     vector<Literal*> H = getPotentialTargets(l, q1->literals());
 
+    //vector<Literal*> L2(L);
     L.erase(std::find(L.begin(), L.end(), l));
     R.push(StackElement(ContainmentMapping(), H, L));
-    L.clear();
-    H.clear();
 
     do {
         StackElement e = R.top();
@@ -72,10 +71,14 @@ bool DepthFirst::matches(const QueryPtr q1, const QueryPtr q2)
 
             // Check compatibility of h with mapping for g
             ContainmentMapping gmap;
-            gmap = createMapping(l,g);
+            try {
+                gmap = createMapping(l,g);
+            } catch (string e) {
+                continue;
+            }
 
-            Log::d(TAG, string("h = ").append(cmToString(h)));
-            Log::d(TAG, string("gmap = ").append(cmToString(gmap)));
+//            Log::d(TAG, string("h = ").append(cmToString(h)));
+//            Log::d(TAG, string("gmap = ").append(cmToString(gmap)));
             bool compat = mappingCompatible(h, gmap);
             if (compat) {
                 if (L.empty()) {
@@ -118,7 +121,9 @@ bool DepthFirst::mappingCompatible(ContainmentMapping h, ContainmentMapping g) c
     for (pair<char, char> ph : h) {
         for (pair<char, char> pg : g) {
             if (c.isVariable(ph.first) && c.isVariable(pg.first)
-                    && (ph.first == pg.first || ph.second == pg.second)) {
+                    && c.isVariable(ph.second) && c.isVariable(pg.second)
+                    && ((ph.first == pg.first && ph.second != pg.second)
+                        || (ph.first != pg.first && ph.second == pg.second))) {
                 // Prevents: a->b, a->c
                 return false;
             } else if (c.isConstant(ph.first) && c.isConstant(pg.first)
@@ -132,12 +137,17 @@ bool DepthFirst::mappingCompatible(ContainmentMapping h, ContainmentMapping g) c
             }
         }
     }
-
+    cout << cmToString(h) << " <-> " << cmToString(g) << " : OK" << endl;
     return true;
 }
 
 ContainmentMapping DepthFirst::createMapping(Literal* l, Literal* g) const throw (string)
 {
+    if (l->constantsCount() != g->constantsCount()
+            || l->variableCount() != g->variableCount()) {
+        throw string("size mismatch");
+    }
+
     ContainmentMapping m, n;
     for (size_t i = 0; i < l->variables().size(); ++i) {
         pair<char,char> p;
@@ -145,11 +155,13 @@ ContainmentMapping DepthFirst::createMapping(Literal* l, Literal* g) const throw
         p.second = g->variables().at(i);
         m.push_back(p);
 
-//        if (!mappingCompatible(m, n)) {
-//            cout << "Mapping not found: " << cmToString(m) << " || " << cmToString(n) << endl;
-//            throw string();
-//        }
-//        n = m;
+        //cout << cmToString(m) << " <-> " << cmToString(n) << endl;
+
+        if (!mappingCompatible(m, n)) {
+            //cout << "Mapping not found: " << cmToString(m) << " || " << cmToString(n) << endl;
+            throw string();
+        }
+        n = m;
     }
 
     for (size_t i = 0; i < l->constants().size(); ++i) {
