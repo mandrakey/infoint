@@ -11,6 +11,7 @@ using std::stack;
 using std::vector;
 #include <utility>
 using std::pair;
+#include <iostream>
 
 typedef vector<pair<char, char> > ContainmentMapping;
 
@@ -31,10 +32,13 @@ private:
         vector<Literal*> mSources;
     };
 
+public:
     vector<Literal*> getPotentialTargets(Literal* l, vector<Literal>& targets) const;
     bool mappingCompatible(ContainmentMapping h, Literal* l, Literal* g) const;
     ContainmentMapping createMapping(Literal* l, Literal* g) const;
 
 };
+
+std::ostream& operator<<(std::ostream& lhs, const ContainmentMapping& rhs);
 
 #endif /* DEPTHFIRST_HPP_ */

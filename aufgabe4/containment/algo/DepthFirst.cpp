@@ -9,6 +9,7 @@ using std::endl;
 #include <memory>
 using std::vector;
 #include <algorithm>
+#include <sstream>
 
 //==============================================================================
 // StackElement
@@ -123,4 +124,20 @@ ContainmentMapping DepthFirst::createMapping(Literal* l, Literal* g) const
     }
 
     return m;
+}
+
+//==============================================================================
+// NON-CLASS FUNCTIONS
+
+std::ostream& operator<<(std::ostream& lhs, const ContainmentMapping& rhs)
+{
+    std::stringstream str;
+    str << "[ ";
+    for (pair<char, char> p : rhs) {
+        str << p.first << "->" << p.second << ", ";
+    }
+    str << "]";
+
+    lhs << str.str();
+    return lhs;
 }

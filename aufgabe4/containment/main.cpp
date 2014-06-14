@@ -12,10 +12,14 @@ using std::string;
 #include <vector>
 using std::vector;
 
+void test();
 bool parseArgs(int argc, char* argv[]) throw (const char*);
 
 int main(int argc, char* argv[])
 {
+//    test();
+//    return -99;
+
     try {
         parseArgs(argc, argv);
     } catch (const char* s) {
@@ -91,4 +95,16 @@ bool parseArgs(int argc, char* argv[]) throw (const char*)
 
     const Containment c(inputFile, outputFile, algorithm, debug);
     return true;
+}
+
+void test()
+{
+    DepthFirst df;
+    string l1("a(a,b,C)");
+    string l2("b(x,y,D)");
+    Literal a(l1);
+    Literal b(l2);
+
+    ContainmentMapping m = df.createMapping(&a,&b);
+    cout << m << endl;
 }
