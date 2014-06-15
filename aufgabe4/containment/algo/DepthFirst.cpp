@@ -134,7 +134,7 @@ bool DepthFirst::mappingCompatible(ContainmentMapping h, ContainmentMapping g) c
     return true;
 }
 
-ContainmentMapping DepthFirst::createMapping(Literal* l, Literal* g) const throw (string)
+ContainmentMapping DepthFirst::createMapping(Literal* l, Literal* g) throw (string)
 {
     if (l->constantsCount() != g->constantsCount()
             || l->variableCount() != g->variableCount()) {

@@ -46,6 +46,7 @@ pair<QueryPtr, QueryPtr> FileParser::getQueryPair() throw (int)
     lines[2] = trim(string(in[2]));
     mInputStream.getline(in[3], INPUT_BUFFER); // Results
     lines[3] = trim(string(in[3]));
+//    cout << lines[3] << endl;
 
     if (lines[1] == "" || lines[2] == "") {
         return p;
