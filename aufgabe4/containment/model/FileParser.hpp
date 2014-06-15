@@ -10,6 +10,8 @@ using std::ifstream;
 using std::pair;
 #include <memory>
 using std::unique_ptr;
+#include <string>
+using std::string;
 
 class FileParser
 {
@@ -27,6 +29,8 @@ public:
 
 private:
     ifstream mInputStream;
+
+    string trim(const string& s);
 };
 
 #endif // FILEPARSER_HPP

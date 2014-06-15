@@ -20,7 +20,7 @@ bool parseArgs(int argc, char* argv[]) throw (const char*);
 
 int main(int argc, char* argv[])
 {
-    Log::setDebug(true);
+//    Log::setDebug(true);
 //    test();
 //    return -99;
 
@@ -49,22 +49,25 @@ int main(int argc, char* argv[])
     }
 
     // Read input file
-    int i = 0;
+    int qcount = 0;
     while (true) {
+        ++qcount;
         pair<QueryPtr, QueryPtr> p = parser.getQueryPair();
         if (p.first.get() == 0 || p.second.get() == 0) {
             break;
         }
 
         bool match = c.algorithm()->matches(std::move(p.first), std::move(p.second));
-        cout << "Match? " << match << endl;
+//        cout << "Match? " << match << endl;
         out << ((match) ? "true" : "false") << endl;
         // Note: p.first and p.second are not copied, but MOVED into
         // the algorithm method (necessary because of
         // unique_ptr<Query> (cannot be copied!)
     }
 
+    out << endl;
     out.close();
+    cout << "Processed " << qcount << " Queries." << endl;
 
     return 0;
 }

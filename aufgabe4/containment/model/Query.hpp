@@ -19,8 +19,6 @@ public:
 
 	vector<char> relations() const;
     vector<Literal>& literals();
-
-    string mOriginal;
 };
 
 std::ostream& operator<<(std::ostream& lhs, Query& rhs);
