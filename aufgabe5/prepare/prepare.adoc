@@ -1,0 +1,25 @@
+= Liste vorbereiten
+
+== Randbedingungen
+Gesamtmenge Tupel: *483* + 
+Gesamtmenge Attribute: *23* + 
+Menge Ziel-Attribute: *7*
+
+== Ablauf
+
+. Zufällig Menge der Ziel-Tupel berechnen (70 - 150)
+. Für jedes Ziel-Tupel ein zufälliges Original-Tupel (1 - 483) ziehen. Achtung: _Jedes 
+    darf nur einmal vorkommen!_ + 
+    Ergebnis: Eine Liste von 70-150 Zeilennummern zwischen 1 und 483.
+. Für jedes Ziel-Attribut ein zufälliges Original-Attribut (1 - 23) ziehen.
+    Achtung: _Jedes darf nur einmal vorkommen!_ + 
+    Ergebnis: Eine Liste von 7 Spaltennummern zwischen 1 und 23.
+. Eingabedatei und Ausgabedatei öffnen
+. Eingabedatei zeilenweise lesen
+.. Jede Zeile, die als Original-Tupel markiert wurde, auseinanderbauen am 
+    Trennzeichen
+.. Jeden Wert für ein Ziel-Attribut dieser Zeile in eine neue Zeichenkette 
+    überführen (= neues Tupel generieren)
+.. Generierte Zeile in Ausgabedatei schreiben
+. Dateien schließen
+. Fertisch!
