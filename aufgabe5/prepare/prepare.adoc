@@ -23,3 +23,58 @@ Menge Ziel-Attribute: *7*
 .. Generierte Zeile in Ausgabedatei schreiben
 . Dateien schließen
 . Fertisch!
+
+=== Eckpunkte
+* 2 Listen, die auf ähnliche Weise erzeugt werden
+* In Liste suchen
+* Mehrere Zufallszahlen (Bereich x bis y)
+* Datei lesen/schreiben
+* String zerlegen
+
+== Was braucht man grob in C++ ?
+* fstream -> ifstream, ofstream
+* string
+* vector
+* algorithm -> std::find, 
+* cstdlib, time.h -> srand, rand
+* cstring -> strtok
+
+[source,cpp]
+.String auseinanderbauen und zusammenfügen
+----
+const char* s = "erster;zweiter;dritter";
+char* t = new char[strlen(s) + 1];
+strcpy(t, s);
+vector<const char*> v;
+
+// Tokenize t into v
+char* tmp = strtok(t, ";");
+while (tmp) {
+    v.push_back(tmp);
+    tmp = strtok(0, ";");
+}
+
+// Output concatenated
+for (auto it = v.begin(); it != v.end(); ++it) {
+    cout << *it;
+    if ((it + 1) != v.end()) {
+        cout << ";";
+    }
+}
+cout << endl;
+----
+
+[source,cpp]
+.Element in Vektor enthalten?
+----
+vector<string> v;
+//...
+string element("hallo");
+
+auto it = std::find(v.begin(), v.end(), element);
+if (it != v.end()) {
+    // Gefunden
+} else {
+    // Nicht gefunden
+}
+----
