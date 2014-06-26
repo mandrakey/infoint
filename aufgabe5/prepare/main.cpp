@@ -6,6 +6,8 @@
 #include <fstream>
 #include <string>
 #include <cstring>
+#include <QString>
+#include <QStringList>
 
 using namespace std;
 
@@ -68,20 +70,32 @@ int main()
         in.getline(buffer, 1024);
         if (find(tuple.begin(), tuple.end(), i)!= tuple.end())
         {
-            char *tmp;
+            //char *tmp;
             int j = 1, numout = 1;
-            while((tmp = strsep(&buffer, ";")) != 0)
-            {
+            QStringList tmp = QString(buffer).split(";");
+            for (j = 1; j <= tmp.size(); ++j) {
                 if (find(attribute.begin(), attribute.end(), j)!= attribute.end())
                 {
-                    out << tmp;
+                    out << tmp[j - 1].toStdString();
                     if (numout++ < attribut_rand_set) {
                         out << ";";
                     }
 
                 }
-                j++;
             }
+
+//            while((tmp = strsep(&buffer, ";")) != 0)
+//            {
+//                if (find(attribute.begin(), attribute.end(), j)!= attribute.end())
+//                {
+//                    out << tmp;
+//                    if (numout++ < attribut_rand_set) {
+//                        out << ";";
+//                    }
+
+//                }
+//                j++;
+//            }
             out<<endl;
         }
         delete buffer;
