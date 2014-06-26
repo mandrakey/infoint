@@ -61,16 +61,16 @@ int main()
         return 1;
     }
 
-    char buffer[1024];
     int i = 0;
     while(!in.eof())
     {
+        char* buffer = new char[1024];
         in.getline(buffer, 1024);
         if (find(tuple.begin(), tuple.end(), i)!= tuple.end())
         {
-            char *tmp = strtok(buffer, ";");
+            char *tmp;
             int j = 1, numout = 1;
-            while(tmp)
+            while((tmp = strsep(&buffer, ";")) != 0)
             {
                 if (find(attribute.begin(), attribute.end(), j)!= attribute.end())
                 {
@@ -81,10 +81,10 @@ int main()
 
                 }
                 j++;
-                tmp = strtok(0, ";");
             }
             out<<endl;
         }
+        delete buffer;
         i++;
     }
     in.close();
