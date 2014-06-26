@@ -66,27 +66,22 @@ int main()
     while(!in.eof())
     {
         in.getline(buffer, 1024);
-        cout<<buffer<<endl;
         if (find(tuple.begin(), tuple.end(), i)!= tuple.end())
         {
             char *tmp = strtok(buffer, ";");
-            int j = 1;
+            int j = 1, numout = 1;
             while(tmp)
             {
                 if (find(attribute.begin(), attribute.end(), j)!= attribute.end())
                 {
-                    if(j != attribut_rand_set)
-                    {
-                        out<<tmp<<";";
-                    }
-                    else
-                    {
-                        out<<tmp;
+                    out << tmp;
+                    if (numout++ < attribut_rand_set) {
+                        out << ";";
                     }
 
                 }
-                strtok(0, ";");
                 j++;
+                tmp = strtok(0, ";");
             }
             out<<endl;
         }
@@ -96,6 +91,7 @@ int main()
     out.close();
 
     cout << "Feddisch!" << endl;
+    cout << "Tupel: " << tuple_rand_set << endl;
     return 0;
 }
 
