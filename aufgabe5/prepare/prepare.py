@@ -73,7 +73,7 @@ for line in infile:
         newline = []
         for j in range(1,len(tmp) + 1):
             if attribList.count(j) != 0:
-                newline.append(tmp[j - 1])
+                newline.append(tmp[j - 1].strip(" "))
         
         # Write to target
         for j in range(0,len(newline)):
