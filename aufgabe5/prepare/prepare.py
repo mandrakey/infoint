@@ -58,9 +58,9 @@ except OSError as e:
 # Calculate ID lists
 tuplesCount = random.randrange(70, 150)
 attribCount = random.randrange(5, 7)
-tuplesList = createList(tuplesCount, 1, 483)
+tuplesList = sorted(createList(tuplesCount, 1, 483))
 #~ tuplesList = [ 25 ]
-attribList = createList(attribCount, 1, 23)
+attribList = sorted(createList(attribCount, 1, 23))
 #~ attribList = [ 1, 4, 6, 7, 9, 23 ]
 
 # Process file
@@ -87,5 +87,5 @@ for line in infile:
 infile.close()
 outfile.close()
 
-print("Wrote {0} tuples.\n".format(tuplesCount))
-                
+print("Wrote {0} tuples: {1}\n".format(tuplesCount, tuplesList))
+print("Wrote {0} attributes: {1}".format(attribCount, attribList))
