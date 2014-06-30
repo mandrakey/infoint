@@ -21,10 +21,10 @@ const vector<string>& Tuple::attributes() const
     return mAttributes;
 }
 
-const string& Tuple::attribute(int index) const
+const string& Tuple::attribute(unsigned int index) const throw (const char*)
 {
     if (index > mAttributes.size()) {
-        return string();
+        throw "Requested attribute index out of range.";
     }
     
     return mAttributes.at(index);

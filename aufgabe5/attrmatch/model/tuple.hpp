@@ -14,7 +14,7 @@ public:
     Tuple(const char* line);
     
     const std::vector<std::string>& attributes() const;
-    const std::string& attribute(int index) const;
+    const std::string& attribute(unsigned int index) const throw (const char*);
     
 private:
     std::vector<std::string> mAttributes;
