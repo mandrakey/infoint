@@ -1,4 +1,6 @@
 #include "attrmatch.hpp"
+#include "model/relation.hpp"
+#include "model/tuple.hpp"
 
 #include <iostream>
 using std::cout;
@@ -22,4 +24,14 @@ int main(int argc, char* argv[])
             "inputFile1 = " << am.inputFile1() << endl << 
             "inputFile2 = " << am.inputFile2() << endl <<
             "outputFile = " << am.outputFile() << endl;
+    
+    Relation r("Test");
+    r.addTuple(new Tuple("a;b;\"c und ; so\";d"));
+    
+    cout << "Got " << r.tuples().size() << " tuples:" << endl;
+    for (auto t_ptr : r.tuples()) {
+        for (auto t : t_ptr->attributes()) {
+            cout << "Attr: " << t << endl;
+        }
+    }
 }
