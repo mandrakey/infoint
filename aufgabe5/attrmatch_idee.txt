@@ -13,6 +13,36 @@ Vorgehen:
 		a) Wert für Wert (aufwändig, n*m)
 		b) Blockweise (überspringt im Idealfall viele Werte)
 
+	Längenvergleich mittlere Länge (oder Median) Attribut1 <-> Attribut2. Länge zu unterschiedlich -> kein Matching
+
 	Passt ein Block vom Inhaltstyp NICHT zu einem anderen (bspw: ID<->String, Zahl<->String): min. 6% der Werte prüfen. Wenn immernoch kein Match -> Attribut1 passt nicht zu Attribut2
 
 	Passt ein Block vom Typ her, inhaltliche Ähnlichkeit prüfen. Passen mindestens X% der Blöcke auch nach inhaltlicher Ähnlichkeit zusammen -> Attribut1 passt zu Attribut2
+
+Tuple {
+	meanLength[] <- beim parsen berechnen
+	mAttributes wird zu vector<pair<int(blockId), Attribute>>
+}
+
+AttributeType {
+	DATE, INTEGER, DOUBLE, STRING, LONGSTRING, ID, RANGE
+}
+
+map<AT, pair<vector<int>, vector<int>>>
+
+DATE : (1,3),(2)
+STRING : (),(1,2) gibts net
+
+1->2 (60%) !!!
+3->2 (55%)
+
+So gehts!
+---------
+1. Lesen Attributliste + Typ festlegen + mittlere Länge berechnen (bzw. Mittelwert, je nach Typ) + 
+	potenzielle Matchings zuweisen (DATE -> DATE)
+2. Wenn für Typ STRING eine Relation nichts enthält -> direkt Ausgabe als "kein Match"
+3. Falls Typ ID,LONGSTRING,RANGE? -> gibt nur ein Matching, keine Prüfung
+4. Sortieren des Restes
+5. Blöcke bilden je nach Typ (Blöcke < 4 entfernen) -> Blockliste mit Verweisen auf Attribute
+6. Vergleich Attributweise nach Ähnlichkeit (Anzahl der passenden Blöcke)
+7. Falls mehrere passende Blöcke für einen Typ -> höchste Trefferquote gewinnt
