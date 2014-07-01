@@ -7,22 +7,22 @@ using std::vector;
 
 using std::shared_ptr;
 
-Relation::Relation(const char* name) :
-    mName(name), mTuples()
+Relation::Relation(const char* filename) :
+    mFileName(filename), mTuples()
 {
 }
 
-Relation::Relation(const string& name) : 
-    mName(name), mTuples()
+Relation::Relation(const string& filename) :
+    mFileName(filename), mTuples()
 {
 }
 
 //==============================================================================
 // GETTER / SETTER
 
-string Relation::name() const
+string Relation::fileName() const
 {
-    return mName;
+    return mFileName;
 }
 
 void Relation::addTuple(Tuple* tuple)

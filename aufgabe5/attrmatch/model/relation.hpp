@@ -4,22 +4,25 @@
 #include "tuple.hpp"
 
 #include <vector>
+using std::vector;
 #include <string>
+using std::string;
 #include <memory>
+using std::shared_ptr;
 
 class Relation
 {
 public:
-    Relation(const std::string& name);
-    Relation(const char* name);
+    Relation(const string& filename);
+    Relation(const char* filename);
     
-    std::string name() const;
+    string fileName() const;
     void addTuple(Tuple* tuple);
-    const std::vector<std::shared_ptr<Tuple> >& tuples() const;
+    const vector<shared_ptr<Tuple> >& tuples() const;
     
 private:
-    std::string mName;
-    std::vector<std::shared_ptr<Tuple> > mTuples;
+    string mFileName;
+    vector<shared_ptr<Tuple> > mTuples;
 };
 
 #endif
