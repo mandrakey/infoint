@@ -1,0 +1,18 @@
+Vorgehen:
+
+- Relationen einlesen und in Tupel mit Attributlisten trennen
+	Klasse Relation und Tuple : OK
+	Einlesen aus Datei : OK
+	Parsen von Tupeln : OK
+	?Attributlisten beim einlesen sortieren
+	evtl.: Attributwerte in logische Blöcke gruppieren
+		(z.B. 10-20, Stringlänge etc...)
+
+- Relationenvergleich
+	Relationen Attribut(= Spalten)weise vergleichen
+		a) Wert für Wert (aufwändig, n*m)
+		b) Blockweise (überspringt im Idealfall viele Werte)
+
+	Passt ein Block vom Inhaltstyp NICHT zu einem anderen (bspw: ID<->String, Zahl<->String): min. 6% der Werte prüfen. Wenn immernoch kein Match -> Attribut1 passt nicht zu Attribut2
+
+	Passt ein Block vom Typ her, inhaltliche Ähnlichkeit prüfen. Passen mindestens X% der Blöcke auch nach inhaltlicher Ähnlichkeit zusammen -> Attribut1 passt zu Attribut2
