@@ -1,6 +1,5 @@
 #include "attrmatch.hpp"
 #include "model/relation.hpp"
-#include "model/tuple.hpp"
 #include "model/matcher.hpp"
 #include "bmlib/log.hpp"
 
@@ -43,15 +42,4 @@ int main(int argc, char* argv[])
     
     //--------------------------------------------------------------------------
     // Reading complete. Do the magic :)
-
-    // todo: remove demo output
-    cout << "Got " << r1.tuples().size() << " tuples from R1:" << endl;
-    int tupleNr = 1;
-    for (auto t_ptr : r1.tuples()) {
-        cout << "Tupel " << tupleNr++ << endl;
-        for (const string& t : t_ptr->attributes()) {
-            cout << "Attr: " << t << endl;
-        }
-        cout << endl;
-    }
 }

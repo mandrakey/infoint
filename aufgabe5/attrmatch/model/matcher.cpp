@@ -3,13 +3,9 @@
 #include <fstream>
 using std::ifstream;
 using std::ofstream;
-#include <string>
 using std::string;
-#include <vector>
 using std::vector;
-#include <utility>
 using std::pair;
-#include <memory>
 using std::shared_ptr;
 
 //==============================================================================
@@ -18,6 +14,7 @@ using std::shared_ptr;
 const int Matcher::INPUTBUFFER_SIZE = 512;
 
 shared_ptr<Relation> Matcher::mCurrentRelation = 0;
+pair<shared_ptr<Relation>, shared_ptr<Relation> > Matcher::mRelations;
 PossibleMatchMap Matcher::mPossibleMatches;
 map<int, int> Matcher::mTemporaryAttributeMean;
 map<int, map<AttributeType, int> > Matcher::mTemporaryAttributeTypes;
@@ -45,18 +42,47 @@ vector<pair<int, int> > Matcher::match(Relation* r1, Relation* r2)
     }
 
     vector<pair<int, int> > matches;
+    mRelations.first = shared_ptr<Relation>(r1);
+    mRelations.second = shared_ptr<Relation>(r2);
 
     //----
     // 1. Read and parse relations
-    mCurrentRelation = shared_ptr<Relation>(r1);
+    mCurrentRelation = mRelations.first;
     readParseRelation();
 
-    mCurrentRelation = shared_ptr<Relation>(r2);
+    mCurrentRelation = mRelations.second;
     readParseRelation();
+
+    // todo: Implement following steps in matcher
 
     //----
     // 2. Find non-matching types
-    // todo: Implement step2 in matcher
+    // removeNonMatching()
+
+    //----
+    // 3. Find singular matchings (ID, RANGE, LONGSTRING) and say "gotcha!"
+    // findSingularMatchings()
+
+    //----
+    // 4. Sort still-to-match attribute lists
+    // use std::sort(vector.begin(), vector.end()), needs include for algorithm
+
+    //----
+    // 5. Build blocks over sorted attribute lists
+    // Relation should do that, like mRelations.first->buildAttributeBlocks()
+
+    //----
+    // 6. Compare attribute-wise for similarity
+    // use generated block lists: mRelations.first->attributeBlocks()
+    // hint: first block-list = first attribute and so on
+    // bool attributesMatch(const AttributeBlock& a, const AttributeBlock& b);
+    // count matches somehow ... !!!
+
+    //----
+    // 7. Look through produces matches list
+    // if, for two attributes, there is not match -> do nothing
+    // if, for two attributes, there is exactly one match -> add to matches
+    // if, for two attributes, there are 2+ matches -> add the on with highest block match count to matches
 
     return matches;
 }
@@ -76,7 +102,7 @@ void Matcher::readParseRelation() throw (const string&)
 
     while (!in.eof()) {
         in.getline(buf, INPUTBUFFER_SIZE);
-        mCurrentRelation->addTuple(new Tuple(buf));
+        mCurrentRelation->addTuple(buf);
     }
 }
 

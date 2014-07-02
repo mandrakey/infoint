@@ -3,6 +3,7 @@
 
 #include "attributetype.hpp"
 #include "relation.hpp"
+#include "attributeblock.hpp"
 
 #include <memory>
 using std::shared_ptr;
@@ -32,11 +33,15 @@ public:
 
 private:
     static shared_ptr<Relation> mCurrentRelation;
+    static pair<shared_ptr<Relation>, shared_ptr<Relation> > mRelations;
     static PossibleMatchMap mPossibleMatches;
     static map<int, int> mTemporaryAttributeMean;
     static map<int, map<AttributeType, int> > mTemporaryAttributeTypes;
 
     void readParseRelation() throw (const string&);
+    void removeNonMatching();
+    void findSingularMatchings(vector<pair<int, int> >& matches);
+    bool attributesMatch(const AttributeBlock& a, const AttributeBlock& b);
 };
 
 #endif // MATCHER_HPP
