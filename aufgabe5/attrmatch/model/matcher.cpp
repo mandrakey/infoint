@@ -49,9 +49,11 @@ vector<pair<int, int> > Matcher::match(Relation* r1, Relation* r2)
     // 1. Read and parse relations
     mCurrentRelation = mRelations.first;
     readParseRelation();
+    mCurrentRelation->compressAttributeTypes();
 
     mCurrentRelation = mRelations.second;
     readParseRelation();
+    mCurrentRelation->compressAttributeTypes();
 
     // todo: Implement following steps in matcher
 
