@@ -201,6 +201,30 @@ bool Matcher::attributesMatch(const vector<std::string>& a, const vector<std::st
 
         break;
     case STRING:
+        //looks for meanlength of strings
+        int meanlength1 = 0, meanlength2 = 0;
+        for (string& s : a){
+            meanlength1 += s.size();
+        }
+        meanlength1 = meanlength1 / a.size();
+
+        for (string& s : b){
+            meanlength2 += s.size();
+        }
+        meanlength2 = meanlength2 / b.size();
+
+        //matches the long string and the very short stings
+        if (meanlength1 > 20 && meanlength2 > 20 || meanlength1 <=4 && meanlength2 <= 4){
+            return true;
+        }
+        /*todo: look for "," in strings... stings with more "," than
+         * 10 matches and with less than 10! The strings differ in the sum
+         * of "," in strings...*/
+        else if(){
+
+        }
+
+
         break;
     case DATE:
         int empty1 = 0, empty2 = 0;
