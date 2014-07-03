@@ -64,7 +64,7 @@ vector<pair<int, int> > Matcher::match(Relation* r1, Relation* r2)
 
     //----
     // 3. Find singular matchings (ID, RANGE, LONGSTRING) and say "gotcha!"
-    // findSingularMatchings()
+    findSingularMatchings(matches);
 
     //----
     // 4. Sort still-to-match attribute lists
@@ -118,6 +118,17 @@ void Matcher::findPossibleMatches()
         for (pair<int, vector<AttributeType> p2 : at2) {
             if (p1.second.at(0) == p2.second.at(0)) {
                 mPossibleMatches[p1.second.at(0)].push_back(pair<int,int>(p1.first, p2.first));
+            }
+        }
+    }
+}
+
+void Matcher::findSingularMatchings(vector<pair<int, int> >& matches)
+{
+    for (AttributeType t : vector<AttributeType>({ID, RANGE, LONGSTRING})) {
+        if (mPossibleMatches.find(t) != mPossibleMatches.end()) {
+            for (pair<int, int> p : mPossibleMatches[t]) {
+                matches.push_back(p);
             }
         }
     }
