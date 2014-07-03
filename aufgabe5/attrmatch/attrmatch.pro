@@ -7,6 +7,9 @@ QMAKE_CXXFLAGS += -std=c++11
 QMAKE_CXXFLAGS += -Wextra
 QMAKE_CXXFLAGS += -Weffc++
 
+LIBS += -lboost_regex
+LIBS += -lpthread
+
 SOURCES += attrmatch.cpp \
     main.cpp \
     bmlib/log.cpp \

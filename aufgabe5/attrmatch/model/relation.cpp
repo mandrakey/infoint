@@ -7,24 +7,19 @@ using std::stringstream;
 #include <utility>
 using std::pair;
 
-using std::regex;
 using std::string;
 using std::vector;
 using std::map;
-
 using std::shared_ptr;
+
+using boost::regex;
 
 const char Relation::TUPLE_SEPARATOR = ';';
 const regex Relation::RX_ID("[0-9]{2,3}[a-zA-Z]{2,3}[0-9]{2,3}");
-const regex Relation::RX_DATE("");
-const regex Relation::RX_RANGE("");
-const regex Relation::RX_DOUBLE("");
-const regex Relation::RX_INTEGER("");
-//const regex Relation::RX_ID("[0-9]{2,3}[a-zA-Z]{2,3}[0-9]{2,3}");
-//const regex Relation::RX_DATE("[0-9]{1,2}\\-[a-zA-Z]{3}\\-[0-9]{2}");
-//const regex Relation::RX_RANGE("[0-9\\.]+ ?(\\-|to) ?[0-9\\.]+");
-//const regex Relation::RX_DOUBLE("\\-?[0-9]+\\.[0-9]+");
-//const regex Relation::RX_INTEGER("\\-?[0-9]+");
+const regex Relation::RX_DATE("[0-9]{1,2}\\-[a-zA-Z]{3}\\-[0-9]{2}");
+const regex Relation::RX_RANGE("[0-9\\.]+ ?(\\-|to) ?[0-9\\.]+");
+const regex Relation::RX_DOUBLE("\\-?[0-9]+\\.[0-9]+");
+const regex Relation::RX_INTEGER("\\-?[0-9]+");
 
 Relation::Relation(const char* filename) :
     mFileName(filename), mAttributes(), mAttributeTypes(), mAttributeBlocks()
@@ -127,27 +122,28 @@ void Relation::addAttribute(int& index, const string& attribute)
 AttributeType Relation::getType(const string& attribute)
 {
     // Is it an ID?
-    if (std::regex_match(attribute, RX_ID)) {
+    const char* exp = attribute.c_str();
+    if (boost::regex_match(exp, RX_ID)) {
         return AttributeType::ID;
     }
 
     // Is it a date value?
-    if (std::regex_match(attribute, RX_DATE)) {
+    if (boost::regex_match(exp, RX_DATE)) {
         return AttributeType::DATE;
     }
 
     // Is it a range value?
-    if (std::regex_match(attribute, RX_RANGE)) {
+    if (boost::regex_match(exp, RX_RANGE)) {
         return AttributeType::RANGE;
     }
 
     // Is it a double value?
-    if (std::regex_match(attribute, RX_DOUBLE)) {
+    if (boost::regex_match(exp, RX_DOUBLE)) {
         return AttributeType::DOUBLE;
     }
 
     // Is it an integer value?
-    if (std::regex_match(attribute, RX_INTEGER)) {
+    if (boost::regex_match(exp, RX_INTEGER)) {
         return AttributeType::INTEGER;
     }
 
