@@ -68,7 +68,19 @@ vector<pair<int, int> > Matcher::match(Relation* r1, Relation* r2)
 
     //----
     // 4. Sort still-to-match attribute lists
-    // use std::sort(vector.begin(), vector.end()), needs include for algorithm
+    pair<vector<int>, vector<int> > sorted;
+    for (pair<const AttributeType, vector<pair<int, int> > >& p : mPossibleMatches) {
+        for (pair<int, int>& rels : p.second) {
+            if (std::find(sorted.first.begin(), sorted.first.end(), rels.first) != sorted.first.end()) {
+                mRelations.first->sortAttributes(rels.first);
+                sorted.first.push_back(rels.first);
+            }
+            if (std::find(sorted.second.begin(), sorted.second.end(), rels.second) != sorted.second.end()) {
+                mRelations.second->sortAttributes(rels.second);
+                sorted.second.push_back(rels.second);
+            }
+        }
+    }
 
     //----
     // 5. Build blocks over sorted attribute lists
@@ -114,8 +126,8 @@ void Matcher::findPossibleMatches()
     map<int, vector<AttributeType> >& at1 = mRelations.first->attributeTypes();
     map<int, vector<AttributeType> >& at2 = mRelations.second->attributeTypes();
 
-    for (pair<int, vector<AttributeType> p1 : at1) {
-        for (pair<int, vector<AttributeType> p2 : at2) {
+    for (pair<int, vector<AttributeType> > p1 : at1) {
+        for (pair<int, vector<AttributeType> > p2 : at2) {
             if (p1.second.at(0) == p2.second.at(0)) {
                 mPossibleMatches[p1.second.at(0)].push_back(pair<int,int>(p1.first, p2.first));
             }
@@ -126,11 +138,93 @@ void Matcher::findPossibleMatches()
 void Matcher::findSingularMatchings(vector<pair<int, int> >& matches)
 {
     for (AttributeType t : vector<AttributeType>({ID, RANGE, LONGSTRING})) {
-        if (mPossibleMatches.find(t) != mPossibleMatches.end()) {
+        auto it = mPossibleMatches.find(t);
+        if (it != mPossibleMatches.end()) {
             for (pair<int, int> p : mPossibleMatches[t]) {
                 matches.push_back(p);
             }
+            mPossibleMatches.erase(it);
         }
+    }
+}
+
+bool Matcher::attributesMatch(const vector<std::string>& a, const vector<std::string>& b, const AttributeType t)
+{
+    switch (t) {
+    case INTEGER:
+        int mean1 = 0, mean2 = 0;
+        for (string& s : a) {
+            mean1 += atoi(s.c_str());
+        }
+        mean1 = mean1 / a.size();
+
+        for (string& s : b) {
+            mean2 += atoi(s.c_str());
+        }
+        mean2 = mean2 / a.size();
+
+        if ((mean1 < 100 && mean2 < 100) ||
+                (mean1 < 1500 && mean2 < 1500) ||
+                (mean1 >= 1500 && mean2 >= 1500)) {
+            return true;
+        } else {
+            return false;
+        }
+
+        break;
+    case DOUBLE:
+        double mean1 = 0, mean2 = 0;
+        bool maxMoreTen1 = false, maxMoreTen2 = false;
+        for (string& s : a) {
+            double d = atof(s.c_str());
+            mean1 += atof(d);
+            if (d > 10) {
+                maxMoreTen1 = true;
+            }
+        }
+        mean1 = mean1 / a.size();
+
+        for (string& s : b) {
+            double d = atof(s.c_str());
+            mean2 += atof(d);
+            if (d > 10) {
+                maxMoreTen2 = true;
+            }
+        }
+        mean2 = mean2 / a.size();
+
+        if ((mean1 > 50 && mean2 > 50) ||
+                (mean1 < 5 && mean2 < 5) ||
+                (maxMoreTen1 == maxMoreTen2)) {
+            return true;
+        }
+
+        break;
+    case STRING:
+        break;
+    case DATE:
+        int empty1 = 0, empty2 = 0;
+        for (string& s : a) {
+            if (s.empty()) {
+                ++empty1;
+            }
+        }
+
+        for (string& s : b) {
+            if (s.empty()) {
+                ++empty2;
+            }
+        }
+
+        if ((empty1 < 4 && empty2 < 4) || (empty1 >= 4 && empty2 >= 4)) {
+            return true;
+        } else {
+            return false;
+        }
+
+        break;
+    default:
+        return false;
     }
 }
 

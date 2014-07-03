@@ -29,6 +29,7 @@ public:
     
     void compressAttributeTypes();
     void buildAttributeBlocks();
+    void sortAttributes(int index);
 
     string fileName() const;
     void addTuple(const char* line);

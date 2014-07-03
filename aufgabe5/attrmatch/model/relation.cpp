@@ -1,5 +1,6 @@
 #include "relation.hpp"
 
+#include <algorithm>
 #include <cstring>
 #include <sstream>
 using std::stringstream;
@@ -65,6 +66,11 @@ void Relation::compressAttributeTypes()
 void Relation::buildAttributeBlocks()
 {
     // todo: implement Relation::buildAttributeBlocks
+}
+
+void Relation::sortAttributes(int index)
+{
+    std::sort(mAttributes[index].begin(), mAttributes[index].end());
 }
 
 void Relation::parseLine(const char* line)
