@@ -203,13 +203,25 @@ bool Matcher::attributesMatch(const vector<std::string>& a, const vector<std::st
     case STRING:
         //looks for meanlength of strings
         int meanlength1 = 0, meanlength2 = 0;
+
+        //looks for "NULL" in a string
+        int nullrows1 = 0, nullrows2 = 0;
+
+        //counts NULLS and calculates the meanlength for attrib 1
         for (string& s : a){
             meanlength1 += s.size();
+            if (s.empty()){
+                ++nullrows1;
+            }
         }
         meanlength1 = meanlength1 / a.size();
 
+        //counts NULLS and calculates the meanlength for attrib 2
         for (string& s : b){
             meanlength2 += s.size();
+            if (s.empty()){
+                ++nullrows2;
+            }
         }
         meanlength2 = meanlength2 / b.size();
 
@@ -217,11 +229,20 @@ bool Matcher::attributesMatch(const vector<std::string>& a, const vector<std::st
         if (meanlength1 > 20 && meanlength2 > 20 || meanlength1 <=4 && meanlength2 <= 4){
             return true;
         }
+
         /*todo: look for "," in strings... stings with more "," than
          * 10 matches and with less than 10! The strings differ in the sum
          * of "," in strings...*/
         else if(){
 
+        }
+        /* looks for "NULL" rows and differs between sets with much NULL rows.
+         * this sets are posible candidates for a match. see origin attribute
+         * three, no other so much NULL  rows in it! Only the last Attrib in origin
+         * File has NULL rows, but only 4! */
+
+        else if(nullrows1 > 5 && nullrows2 > 5){
+            return true;
         }
 
 
