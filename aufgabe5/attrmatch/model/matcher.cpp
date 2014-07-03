@@ -1,4 +1,5 @@
 #include "matcher.hpp"
+#include "bmlib/log.hpp"
 
 #include <fstream>
 using std::ifstream;
@@ -12,6 +13,7 @@ using std::map;
 //==============================================================================
 // STATIC INITIALIZERS
 
+const char* Matcher::TAG = "Matcher";
 const int Matcher::INPUTBUFFER_SIZE = 512;
 
 shared_ptr<Relation> Matcher::mCurrentRelation = 0;
@@ -68,19 +70,19 @@ vector<pair<int, int> > Matcher::match(Relation* r1, Relation* r2)
 
     //----
     // 4. Sort still-to-match attribute lists
-    pair<vector<int>, vector<int> > sorted;
-    for (pair<const AttributeType, vector<pair<int, int> > >& p : mPossibleMatches) {
-        for (pair<int, int>& rels : p.second) {
-            if (std::find(sorted.first.begin(), sorted.first.end(), rels.first) != sorted.first.end()) {
-                mRelations.first->sortAttributes(rels.first);
-                sorted.first.push_back(rels.first);
-            }
-            if (std::find(sorted.second.begin(), sorted.second.end(), rels.second) != sorted.second.end()) {
-                mRelations.second->sortAttributes(rels.second);
-                sorted.second.push_back(rels.second);
-            }
-        }
-    }
+//    pair<vector<int>, vector<int> > sorted;
+//    for (pair<const AttributeType, vector<pair<int, int> > >& p : mPossibleMatches) {
+//        for (pair<int, int>& rels : p.second) {
+//            if (std::find(sorted.first.begin(), sorted.first.end(), rels.first) != sorted.first.end()) {
+//                mRelations.first->sortAttributes(rels.first);
+//                sorted.first.push_back(rels.first);
+//            }
+//            if (std::find(sorted.second.begin(), sorted.second.end(), rels.second) != sorted.second.end()) {
+//                mRelations.second->sortAttributes(rels.second);
+//                sorted.second.push_back(rels.second);
+//            }
+//        }
+//    }
 
     //----
     // 5. Build blocks over sorted attribute lists
@@ -93,11 +95,26 @@ vector<pair<int, int> > Matcher::match(Relation* r1, Relation* r2)
     // bool attributesMatch(const AttributeBlock& a, const AttributeBlock& b);
     // count matches somehow ... !!!
 
-    //----
-    // 7. Look through produces matches list
-    // if, for two attributes, there is not match -> do nothing
-    // if, for two attributes, there is exactly one match -> add to matches
-    // if, for two attributes, there are 2+ matches -> add the on with highest block match count to matches
+    vector<int> matched;
+    for (pair<const AttributeType, vector<pair<int, int> > >& p : mPossibleMatches) {
+        for (pair<int, int> attrs : p.second) {
+            if (std::find(matched.begin(), matched.end(), attrs.first) == matched.end()) {
+                const vector<string>* attr1 = 0, *attr2 = 0;
+                try {
+                    attr1 = mRelations.first->attribute(attrs.first);
+                    attr2 = mRelations.first->attribute(attrs.second);
+                } catch (const string ex) {
+                    Log::e(TAG, string("Error matching attributes: ").append(ex));
+                    continue;
+                }
+
+                if (attributesMatch(*attr1, *attr2, p.first)) {
+                    matches.push_back(pair<int, int>(attrs.first, attrs.second));
+                    matched.push_back(attrs.first);
+                }
+            }
+        }
+    }
 
     return matches;
 }
@@ -151,14 +168,14 @@ void Matcher::findSingularMatchings(vector<pair<int, int> >& matches)
 bool Matcher::attributesMatch(const vector<std::string>& a, const vector<std::string>& b, const AttributeType t)
 {
     switch (t) {
-    case INTEGER:
+    case INTEGER: {
         int mean1 = 0, mean2 = 0;
-        for (string& s : a) {
+        for (const string& s : a) {
             mean1 += atoi(s.c_str());
         }
         mean1 = mean1 / a.size();
 
-        for (string& s : b) {
+        for (const string& s : b) {
             mean2 += atoi(s.c_str());
         }
         mean2 = mean2 / a.size();
@@ -172,45 +189,48 @@ bool Matcher::attributesMatch(const vector<std::string>& a, const vector<std::st
         }
 
         break;
-    case DOUBLE:
-        double mean1 = 0, mean2 = 0;
+    }
+    case DOUBLE: {
+        double dmean1 = 0, dmean2 = 0;
         bool maxMoreTen1 = false, maxMoreTen2 = false;
-        for (string& s : a) {
+        for (const string& s : a) {
             double d = atof(s.c_str());
-            mean1 += atof(d);
+            dmean1 += d;
             if (d > 10) {
                 maxMoreTen1 = true;
             }
         }
-        mean1 = mean1 / a.size();
+        dmean1 = dmean1 / a.size();
 
-        for (string& s : b) {
+        for (const string& s : b) {
             double d = atof(s.c_str());
-            mean2 += atof(d);
+            dmean2 += d;
             if (d > 10) {
                 maxMoreTen2 = true;
             }
         }
-        mean2 = mean2 / a.size();
+        dmean2 = dmean2 / a.size();
 
-        if ((mean1 > 50 && mean2 > 50) ||
-                (mean1 < 5 && mean2 < 5) ||
+        if ((dmean1 > 50 && dmean2 > 50) ||
+                (dmean1 < 5 && dmean2 < 5) ||
                 (maxMoreTen1 == maxMoreTen2)) {
             return true;
         }
 
         break;
-    case STRING:
+    }
+    case STRING: {
         break;
-    case DATE:
+    }
+    case DATE: {
         int empty1 = 0, empty2 = 0;
-        for (string& s : a) {
+        for (const string& s : a) {
             if (s.empty()) {
                 ++empty1;
             }
         }
 
-        for (string& s : b) {
+        for (const string& s : b) {
             if (s.empty()) {
                 ++empty2;
             }
@@ -223,6 +243,7 @@ bool Matcher::attributesMatch(const vector<std::string>& a, const vector<std::st
         }
 
         break;
+    }
     default:
         return false;
     }

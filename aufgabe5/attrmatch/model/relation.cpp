@@ -15,11 +15,16 @@ using std::map;
 using std::shared_ptr;
 
 const char Relation::TUPLE_SEPARATOR = ';';
-const regex Relation::RX_ID("^[0-9]{2,3}[a-zA-Z]{2,3}[0-9]{2,3}$");
-const regex Relation::RX_DATE("^[0-9]{1,2}\\-[a-zA-Z]{3}\\-[0-9]{2}$");
-const regex Relation::RX_RANGE("^[0-9\\.]+ ?(\\-|to) ?[0-9\\.]+$");
-const regex Relation::RX_DOUBLE("^\\-?[0-9]+\\.[0-9]+$");
-const regex Relation::RX_INTEGER("^\\-?[0-9]+$");
+const regex Relation::RX_ID("[0-9]{2,3}[a-zA-Z]{2,3}[0-9]{2,3}");
+const regex Relation::RX_DATE("");
+const regex Relation::RX_RANGE("");
+const regex Relation::RX_DOUBLE("");
+const regex Relation::RX_INTEGER("");
+//const regex Relation::RX_ID("[0-9]{2,3}[a-zA-Z]{2,3}[0-9]{2,3}");
+//const regex Relation::RX_DATE("[0-9]{1,2}\\-[a-zA-Z]{3}\\-[0-9]{2}");
+//const regex Relation::RX_RANGE("[0-9\\.]+ ?(\\-|to) ?[0-9\\.]+");
+//const regex Relation::RX_DOUBLE("\\-?[0-9]+\\.[0-9]+");
+//const regex Relation::RX_INTEGER("\\-?[0-9]+");
 
 Relation::Relation(const char* filename) :
     mFileName(filename), mAttributes(), mAttributeTypes(), mAttributeBlocks()
@@ -171,6 +176,15 @@ void Relation::addTuple(const char* line)
 const map<int, vector<string> >& Relation::attributes() const
 {
     return mAttributes;
+}
+
+const vector<string>* Relation::attribute(int index) const throw (const string)
+{
+    if (mAttributes.find(index) == mAttributes.end()) {
+        throw string("Attribute index out of range");
+    }
+
+    return &mAttributes.at(index);
 }
 
 map<int, vector<AttributeType> >& Relation::attributeTypes()
