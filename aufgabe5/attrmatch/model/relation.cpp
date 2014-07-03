@@ -167,6 +167,11 @@ const map<int, vector<string> >& Relation::attributes() const
     return mAttributes;
 }
 
+map<int, vector<AttributeType> >& Relation::attributeTypes()
+{
+    return mAttributeTypes;
+}
+
 const map<int, vector<AttributeBlock> >& Relation::attributeBlocks() const
 {
     return mAttributeBlocks;

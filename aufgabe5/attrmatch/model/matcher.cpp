@@ -7,6 +7,7 @@ using std::string;
 using std::vector;
 using std::pair;
 using std::shared_ptr;
+using std::map;
 
 //==============================================================================
 // STATIC INITIALIZERS
@@ -59,7 +60,7 @@ vector<pair<int, int> > Matcher::match(Relation* r1, Relation* r2)
 
     //----
     // 2. Find non-matching types
-    // removeNonMatching()
+    findPossibleMatches();
 
     //----
     // 3. Find singular matchings (ID, RANGE, LONGSTRING) and say "gotcha!"
@@ -105,6 +106,20 @@ void Matcher::readParseRelation() throw (const string&)
     while (!in.eof()) {
         in.getline(buf, INPUTBUFFER_SIZE);
         mCurrentRelation->addTuple(buf);
+    }
+}
+
+void Matcher::findPossibleMatches()
+{
+    map<int, vector<AttributeType> >& at1 = mRelations.first->attributeTypes();
+    map<int, vector<AttributeType> >& at2 = mRelations.second->attributeTypes();
+
+    for (pair<int, vector<AttributeType> p1 : at1) {
+        for (pair<int, vector<AttributeType> p2 : at2) {
+            if (p1.second.at(0) == p2.second.at(0)) {
+                mPossibleMatches[p1.second.at(0)].push_back(pair<int,int>(p1.first, p2.first));
+            }
+        }
     }
 }
 

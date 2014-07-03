@@ -33,6 +33,7 @@ public:
     string fileName() const;
     void addTuple(const char* line);
     const map<int, vector<string> >& attributes() const;
+    map<int, vector<AttributeType> >& attributeTypes();
     const map<int, vector<AttributeBlock> >& attributeBlocks() const;
     
 private:

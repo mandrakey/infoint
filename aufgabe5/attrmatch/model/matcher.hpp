@@ -16,7 +16,7 @@ using std::pair;
 #include <string>
 using std::string;
 
-typedef map<AttributeType, pair<vector<int>, vector<int> > > PossibleMatchMap;
+typedef map<AttributeType, vector<pair<int, int> > > PossibleMatchMap;
 
 class Matcher
 {
@@ -39,7 +39,7 @@ private:
     static map<int, map<AttributeType, int> > mTemporaryAttributeTypes;
 
     void readParseRelation() throw (const string&);
-    void removeNonMatching();
+    void findPossibleMatches();
     void findSingularMatchings(vector<pair<int, int> >& matches);
     bool attributesMatch(const AttributeBlock& a, const AttributeBlock& b);
 };
