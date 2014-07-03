@@ -1,5 +1,6 @@
 #include "matcher.hpp"
-
+#include <string.h>
+#include <stdio.h>
 #include <fstream>
 using std::ifstream;
 using std::ofstream;
@@ -8,6 +9,7 @@ using std::vector;
 using std::pair;
 using std::shared_ptr;
 using std::map;
+
 
 //==============================================================================
 // STATIC INITIALIZERS
@@ -150,15 +152,15 @@ void Matcher::findSingularMatchings(vector<pair<int, int> >& matches)
 
 bool Matcher::attributesMatch(const vector<std::string>& a, const vector<std::string>& b, const AttributeType t)
 {
-    switch (t) {
+    switch (t) {{
     case INTEGER:
         int mean1 = 0, mean2 = 0;
-        for (string& s : a) {
+        for (const string& s : a) {
             mean1 += atoi(s.c_str());
         }
         mean1 = mean1 / a.size();
 
-        for (string& s : b) {
+        for (const string& s : b) {
             mean2 += atoi(s.c_str());
         }
         mean2 = mean2 / a.size();
@@ -171,11 +173,11 @@ bool Matcher::attributesMatch(const vector<std::string>& a, const vector<std::st
             return false;
         }
 
-        break;
-    case DOUBLE:
+            break;}
+    case DOUBLE:{
         double mean1 = 0, mean2 = 0;
         bool maxMoreTen1 = false, maxMoreTen2 = false;
-        for (string& s : a) {
+        for (const string& s : a) {
             double d = atof(s.c_str());
             mean1 += atof(d);
             if (d > 10) {
@@ -184,7 +186,7 @@ bool Matcher::attributesMatch(const vector<std::string>& a, const vector<std::st
         }
         mean1 = mean1 / a.size();
 
-        for (string& s : b) {
+        for (const string& s : b) {
             double d = atof(s.c_str());
             mean2 += atof(d);
             if (d > 10) {
@@ -199,19 +201,22 @@ bool Matcher::attributesMatch(const vector<std::string>& a, const vector<std::st
             return true;
         }
 
-        break;
-    case STRING:
+        break;}
+    case STRING:{
         //looks for meanlength of strings
         int meanlength1 = 0, meanlength2 = 0;
 
         //looks for "NULL" in a string
         int nullrows1 = 0, nullrows2 = 0;
 
+        //looks for "," in strings
+        int countsymbol1 = 0, countsymbol2 = 0;
+
         /* Matching over stringlength. Long strings, whit over 20 elements,
          * and very short stings, with length under 5, build two groups with
          * different properties, in contrast to the other groups. */
          //counts NULLS and calculates the meanlength for attrib 1
-        for (string& s : a){
+        for (const string& s : a){
             meanlength1 += s.size();
             if (s.empty()){
                 ++nullrows1;
@@ -220,7 +225,7 @@ bool Matcher::attributesMatch(const vector<std::string>& a, const vector<std::st
         meanlength1 = meanlength1 / a.size();
 
         //counts NULLS and calculates the meanlength for attrib 2
-        for (string& s : b){
+        for (const string& s : b){
             meanlength2 += s.size();
             if (s.empty()){
                 ++nullrows2;
@@ -228,27 +233,27 @@ bool Matcher::attributesMatch(const vector<std::string>& a, const vector<std::st
         }
         meanlength2 = meanlength2 / b.size();
 
-        //matches long strings and very short stings
-        if (meanlength1 > 20 && meanlength2 > 20 || meanlength1 <=4 && meanlength2 <= 4){
+        //matches long strings(??? filtered by findSingularMatchings ???) and very short stings
+        if ((meanlength1 > 20 && meanlength2 > 20) || (meanlength1 <=4 && meanlength2 <= 4)){
             return true;
         }
 
         /* Matchings over "," in strings... stings with more "," than
          * 10 matches and with less than 10! These strings differ in the sum
          * of "," in strings, in contrast to the other string attributs. */
-        else if(){
-            int countsymbol1 = 0, countsymbol2 = 0;
-            for (string& s : a){
-                if (strchr(s, ",")){
+         else if((countsymbol1 < 10 && countsymbol2 < 10) || (countsymbol1 >= 10 && countsymbol2 >= 10)){
+
+            for (const string& s : a){
+                if (strchr(s, ',')){
                     ++countsymbol1;
                 }
             }
-            for (string& s : b){
-                if (strchr(s, ",")){
+            for (const string& s : b){
+                if (strchr(s, ',')){
                     ++countsymbol2;
                 }
             }
-            if (countsymbol1 < 10 && countsymbol2 < 10 || countsymbol1 > 10 && countsymbol2 >10){
+            if ((countsymbol1 < 10 && countsymbol2 < 10) || (countsymbol1 > 10 && countsymbol2 > 10)){
                 return true;
             }
         }
@@ -260,18 +265,16 @@ bool Matcher::attributesMatch(const vector<std::string>& a, const vector<std::st
         else if(nullrows1 > 4 && nullrows2 > 4){
             return true;
         }
-
-
-        break;
-    case DATE:
+        break;}
+    case DATE:{
         int empty1 = 0, empty2 = 0;
-        for (string& s : a) {
+        for (const string& s : a) {
             if (s.empty()) {
                 ++empty1;
             }
         }
 
-        for (string& s : b) {
+        for (const string& s : b) {
             if (s.empty()) {
                 ++empty2;
             }
@@ -283,9 +286,10 @@ bool Matcher::attributesMatch(const vector<std::string>& a, const vector<std::st
             return false;
         }
 
-        break;
-    default:
+        break;}
+    default:{
         return false;
+        }
     }
 }
 
