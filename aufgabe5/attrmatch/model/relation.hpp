@@ -34,6 +34,7 @@ public:
     string fileName() const;
     void addTuple(const char* line);
     const map<int, vector<string> >& attributes() const;
+    const vector<string>* attribute(int index) const throw (const string);
     map<int, vector<AttributeType> >& attributeTypes();
     const map<int, vector<AttributeBlock> >& attributeBlocks() const;
     

@@ -21,6 +21,7 @@ typedef map<AttributeType, vector<pair<int, int> > > PossibleMatchMap;
 class Matcher
 {
 public:
+    static const char* TAG;
     static const int INPUTBUFFER_SIZE;
 
     Matcher();
