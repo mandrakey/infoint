@@ -55,6 +55,7 @@ void Relation::compressAttributeTypes()
             if (maxCount < (*it).second) {
                 max = (*it).first;
             }
+            ++it;
         }
 
         // Now, clear v and set max as single element

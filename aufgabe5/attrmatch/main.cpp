@@ -11,6 +11,10 @@ using std::ifstream;
 using std::ofstream;
 #include <string>
 using std::string;
+#include <vector>
+using std::vector;
+#include <utility>
+using std::pair;
 
 int main(int argc, char* argv[])
 {
@@ -32,12 +36,17 @@ int main(int argc, char* argv[])
     Matcher m;
     Relation r1(am.inputFile1());
     Relation r2(am.inputFile2());
+    vector<pair<int, int> > matches;
 
     try {
-        m.match(&r1, &r2);
+        matches = m.match(&r1, &r2);
     } catch (const string& ex) {
         Log::e("main", string("Error while running matcher: ").append(ex));
         return -1;
+    }
+
+    for (pair<int, int> p : matches) {
+        cout << "Match: " << p.first << " -> " << p.second << endl;
     }
     
     //--------------------------------------------------------------------------
