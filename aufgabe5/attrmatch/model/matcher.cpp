@@ -207,7 +207,10 @@ bool Matcher::attributesMatch(const vector<std::string>& a, const vector<std::st
         //looks for "NULL" in a string
         int nullrows1 = 0, nullrows2 = 0;
 
-        //counts NULLS and calculates the meanlength for attrib 1
+        /* Matching over stringlength. Long strings, whit over 20 elements,
+         * and very short stings, with length under 5, build two groups with
+         * different properties, in contrast to the other groups. */
+         //counts NULLS and calculates the meanlength for attrib 1
         for (string& s : a){
             meanlength1 += s.size();
             if (s.empty()){
@@ -225,23 +228,36 @@ bool Matcher::attributesMatch(const vector<std::string>& a, const vector<std::st
         }
         meanlength2 = meanlength2 / b.size();
 
-        //matches the long string and the very short stings
+        //matches long strings and very short stings
         if (meanlength1 > 20 && meanlength2 > 20 || meanlength1 <=4 && meanlength2 <= 4){
             return true;
         }
 
-        /*todo: look for "," in strings... stings with more "," than
-         * 10 matches and with less than 10! The strings differ in the sum
-         * of "," in strings...*/
+        /* Matchings over "," in strings... stings with more "," than
+         * 10 matches and with less than 10! These strings differ in the sum
+         * of "," in strings, in contrast to the other string attributs. */
         else if(){
-
+            int countsymbol1 = 0, countsymbol2 = 0;
+            for (string& s : a){
+                if (strchr(s, ",")){
+                    ++countsymbol1;
+                }
+            }
+            for (string& s : b){
+                if (strchr(s, ",")){
+                    ++countsymbol2;
+                }
+            }
+            if (countsymbol1 < 10 && countsymbol2 < 10 || countsymbol1 > 10 && countsymbol2 >10){
+                return true;
+            }
         }
         /* looks for "NULL" rows and differs between sets with much NULL rows.
          * this sets are posible candidates for a match. see origin attribute
-         * three, no other so much NULL  rows in it! Only the last Attrib in origin
-         * File has NULL rows, but only 4! */
+         * three, no other attribute has so much NULL rows (179) in it! Only the last
+         * Attrib in origin File has NULL rows, but only 4! */
 
-        else if(nullrows1 > 5 && nullrows2 > 5){
+        else if(nullrows1 > 4 && nullrows2 > 4){
             return true;
         }
 
