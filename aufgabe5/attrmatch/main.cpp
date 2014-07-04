@@ -50,5 +50,15 @@ int main(int argc, char* argv[])
     }
     
     //--------------------------------------------------------------------------
-    // Reading complete. Do the magic :)
+    // Reading complete. Write output
+
+    ofstream out(am.outputFile());
+    if (!out.is_open()) {
+        Log::e("main", "Failed to open output file");
+        return -1;
+    }
+
+    for (pair<int, int> p : matches) {
+        out << p.first + 1 << "," << p.second + 1 << endl;
+    }
 }
