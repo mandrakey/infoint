@@ -46,7 +46,7 @@ int main(int argc, char* argv[])
     }
 
     for (pair<int, int> p : matches) {
-        cout << "Match: " << p.first << " -> " << p.second << endl;
+        cout << "Match: " << p.first + 1 << " -> " << p.second + 1 << endl;
     }
     
     //--------------------------------------------------------------------------

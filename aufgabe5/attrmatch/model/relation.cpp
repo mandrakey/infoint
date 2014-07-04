@@ -118,6 +118,7 @@ void Relation::addAttribute(int& index, const string& attribute)
 {
     mAttributes[index].push_back(attribute);
     mAttributeTypes[index].push_back(getType(attribute));
+    ++index;
 }
 
 AttributeType Relation::getType(const string& attribute)
