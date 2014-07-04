@@ -44,6 +44,7 @@ private:
     void findSingularMatchings(vector<pair<int, int> >& matches);
     bool attributesMatch(const AttributeBlock& a, const AttributeBlock& b);
     bool attributesMatch(const vector<string>& a, const vector<string>& b, const AttributeType t);
+    int wordDifference(const string& s, const string& t);
 };
 
 #endif // MATCHER_HPP

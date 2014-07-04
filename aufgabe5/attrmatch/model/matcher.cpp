@@ -227,6 +227,12 @@ bool Matcher::attributesMatch(const vector<std::string>& a, const vector<std::st
         break;
     }
     case STRING: {
+        // runtime test wordDifference
+//        for (unsigned int i = 0; i < a.size(); ++i) {
+//            Log::d(TAG, string("WordDifference: ").append(a[i]).append(" <-> ").append(b[i]));
+//            int wd = wordDifference(a[i], b[i]);
+//        }
+
         //looks for meanlength of strings
         int meanlength1 = 0, meanlength2 = 0;
 
@@ -317,6 +323,38 @@ bool Matcher::attributesMatch(const vector<std::string>& a, const vector<std::st
         return false;
 
     }
+}
+
+int Matcher::wordDifference(const std::string& s, const std::string& t)
+{
+    if (s.empty()) {
+        return t.size();
+    }
+    if (t.empty()) {
+        return s.size();
+    }
+    if (s == t) {
+        return 0;
+    }
+
+    string small, big;
+    if (s.size() < t.size()) {
+        std::transform(s.begin(), s.end(), small.begin(), ::tolower);
+        std::transform(t.begin(), t.end(), big.begin(), ::tolower);
+    } else {
+        std::transform(s.begin(), s.end(), big.begin(), ::tolower);
+        std::transform(t.begin(), t.end(), small.begin(), ::tolower);
+    }
+
+    int diff = 0;
+    for (unsigned int i = 0, j = 0; i < small.size(), j < big.size(); ++i, ++j) {
+        while (small[i] != big[j] && j < big.size()) {
+            ++diff;
+            ++j;
+        }
+    }
+
+    return diff;
 }
 
 //------------------------------------------------------------------------------
