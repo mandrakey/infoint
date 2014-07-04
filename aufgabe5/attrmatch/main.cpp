@@ -18,6 +18,7 @@ using std::pair;
 
 int main(int argc, char* argv[])
 {
+    Log::setDebug(true);
     if (argc != 4) {
         cout << "usage: attrmatch relation1 relation2 outfile" << endl;
         return 1;

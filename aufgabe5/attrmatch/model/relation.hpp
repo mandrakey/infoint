@@ -17,6 +17,7 @@ using boost::regex;
 class Relation
 {
 public:
+    static const char* TAG;
     static const char TUPLE_SEPARATOR;
     static const regex RX_ID;
     static const regex RX_DATE;

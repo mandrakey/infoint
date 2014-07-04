@@ -1,4 +1,5 @@
 #include "relation.hpp"
+#include "bmlib/log.hpp"
 
 #include <algorithm>
 #include <cstring>
@@ -14,8 +15,9 @@ using std::shared_ptr;
 
 using boost::regex;
 
+const char* Relation::TAG = "Relation";
 const char Relation::TUPLE_SEPARATOR = ';';
-const regex Relation::RX_ID("[0-9]{2,3}[a-zA-Z]{2,3}[0-9]{2,3}");
+const regex Relation::RX_ID("[0-9]{1,3}[a-zA-Z]{2,3}[0-9]{2,3}");
 const regex Relation::RX_DATE("[0-9]{1,2}\\-[a-zA-Z]{3}\\-[0-9]{2}");
 const regex Relation::RX_RANGE("[0-9\\.]+ ?(\\-|to) ?[0-9\\.]+");
 const regex Relation::RX_DOUBLE("\\-?[0-9]+\\.[0-9]+");
@@ -92,16 +94,17 @@ void Relation::parseLine(const char* line)
     for (unsigned int i = 0; i < strlen(line); ++i) {
         char c = line[i];
         if (literal) {
-            token << c;
             if (c == '\"') {
                 literal = false;
+            } else {
+                token << c;
             }
         } else {
             if (c == TUPLE_SEPARATOR) {
                 addAttribute(attributeIndex, token.str());
                 token.str("");
             } else if (c == '\"') {
-                token << c;
+//                token << c;
                 literal = true;
             } else {
                 token << c;
@@ -116,8 +119,12 @@ void Relation::parseLine(const char* line)
 
 void Relation::addAttribute(int& index, const string& attribute)
 {
-    mAttributes[index].push_back(attribute);
-    mAttributeTypes[index].push_back(getType(attribute));
+    string attr(attribute);
+    attr.erase(0, attr.find_first_not_of(' '));
+    attr.erase(attr.find_last_not_of(' ') + 1);
+
+    mAttributes[index].push_back(attr);
+    mAttributeTypes[index].push_back(getType(attr));
     ++index;
 }
 
@@ -125,32 +132,44 @@ AttributeType Relation::getType(const string& attribute)
 {
     // Is it an ID?
     const char* exp = attribute.c_str();
+    Log::d(TAG, string("Match '").append(attribute).append("' as ... "));
     if (boost::regex_match(exp, RX_ID)) {
+        Log::d(TAG, "ID\n");
         return AttributeType::ID;
     }
 
     // Is it a date value?
     if (boost::regex_match(exp, RX_DATE)) {
+        Log::d(TAG, "DATE\n");
         return AttributeType::DATE;
     }
 
     // Is it a range value?
     if (boost::regex_match(exp, RX_RANGE)) {
+        Log::d(TAG, "RANGE\n");
         return AttributeType::RANGE;
     }
 
     // Is it a double value?
     if (boost::regex_match(exp, RX_DOUBLE)) {
+        Log::d(TAG, "DOUBLE\n");
         return AttributeType::DOUBLE;
     }
 
     // Is it an integer value?
     if (boost::regex_match(exp, RX_INTEGER)) {
+        Log::d(TAG, "INTEGER\n");
         return AttributeType::INTEGER;
     }
 
     // Ok, must be a string. Long?
-    return (attribute.size() > 20) ? AttributeType::LONGSTRING : AttributeType::STRING;
+    if (attribute.size() > 20) {
+        Log::d(TAG, "LONGSTRING\n");
+        return AttributeType::LONGSTRING;
+    } else {
+        Log::d(TAG, "STRING\n");
+        return AttributeType::STRING;
+    }
 }
 
 //==============================================================================
