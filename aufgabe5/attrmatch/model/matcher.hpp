@@ -45,6 +45,7 @@ private:
     bool attributesMatch(const AttributeBlock& a, const AttributeBlock& b);
     bool attributesMatch(const vector<string>& a, const vector<string>& b, const AttributeType t);
     int wordDifference(const string& s, const string& t);
+    double jaccard(const vector<string>& a, const vector<string>& b);
 };
 
 #endif // MATCHER_HPP

@@ -21,6 +21,7 @@ public:
     static const char TUPLE_SEPARATOR;
     static const regex RX_ID;
     static const regex RX_DATE;
+    static const regex RX_DATE_FOR_THE_STUPID_IDIOTS_WHO_CANNOT_HANDLE_EXCEL;
     static const regex RX_RANGE;
     static const regex RX_DOUBLE;
     static const regex RX_INTEGER;

@@ -41,4 +41,5 @@ void Log::print(std::ostream& stream, const char* type,
                 const string& msg)
 {
     stream << type << "\t" << tag << "\t" << msg << std::endl;
+    stream.flush();
 }

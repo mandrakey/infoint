@@ -18,7 +18,8 @@ using boost::regex;
 const char* Relation::TAG = "Relation";
 const char Relation::TUPLE_SEPARATOR = ';';
 const regex Relation::RX_ID("[0-9]{1,3}[a-zA-Z]{2,3}[0-9]{2,3}");
-const regex Relation::RX_DATE("[0-9]{1,2}\\-[a-zA-Z]{3}\\-[0-9]{2}");
+const regex Relation::RX_DATE("([0-9]{1,2}\\-)?[a-zA-Z]{3}\\-[0-9]{2}");
+const regex Relation::RX_DATE_FOR_THE_STUPID_IDIOTS_WHO_CANNOT_HANDLE_EXCEL("[0-9]{1,2}\. [a-zA-Z]{2,3} [0-9]{2}");
 const regex Relation::RX_RANGE("[0-9\\.]+ ?(\\-|to) ?[0-9\\.]+");
 const regex Relation::RX_DOUBLE("\\-?[0-9]+\\.[0-9]+");
 const regex Relation::RX_INTEGER("\\-?[0-9]+");
@@ -132,42 +133,43 @@ AttributeType Relation::getType(const string& attribute)
 {
     // Is it an ID?
     const char* exp = attribute.c_str();
-    Log::d(TAG, string("Match '").append(attribute).append("' as ... "));
+//    Log::d(TAG, string("Match '").append(attribute).append("' as ... "));
     if (boost::regex_match(exp, RX_ID)) {
-        Log::d(TAG, "ID\n");
+//        Log::d(TAG, "ID\n");
         return AttributeType::ID;
     }
 
     // Is it a date value?
-    if (boost::regex_match(exp, RX_DATE)) {
-        Log::d(TAG, "DATE\n");
+    if (boost::regex_match(exp, RX_DATE) ||
+            boost::regex_match(exp, RX_DATE_FOR_THE_STUPID_IDIOTS_WHO_CANNOT_HANDLE_EXCEL)) {
+//        Log::d(TAG, "DATE\n");
         return AttributeType::DATE;
     }
 
     // Is it a range value?
     if (boost::regex_match(exp, RX_RANGE)) {
-        Log::d(TAG, "RANGE\n");
+//        Log::d(TAG, "RANGE\n");
         return AttributeType::RANGE;
     }
 
     // Is it a double value?
     if (boost::regex_match(exp, RX_DOUBLE)) {
-        Log::d(TAG, "DOUBLE\n");
+//        Log::d(TAG, "DOUBLE\n");
         return AttributeType::DOUBLE;
     }
 
     // Is it an integer value?
     if (boost::regex_match(exp, RX_INTEGER)) {
-        Log::d(TAG, "INTEGER\n");
+//        Log::d(TAG, "INTEGER\n");
         return AttributeType::INTEGER;
     }
 
     // Ok, must be a string. Long?
-    if (attribute.size() > 20) {
-        Log::d(TAG, "LONGSTRING\n");
+    if (attribute.size() > 40) {
+//        Log::d(TAG, "LONGSTRING\n");
         return AttributeType::LONGSTRING;
     } else {
-        Log::d(TAG, "STRING\n");
+//        Log::d(TAG, "STRING\n");
         return AttributeType::STRING;
     }
 }

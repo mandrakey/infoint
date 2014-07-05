@@ -1,8 +1,13 @@
 #include "matcher.hpp"
-#include <string.h>
-#include <stdio.h>
 #include "bmlib/log.hpp"
 
+
+#include <string.h>
+#include <stdio.h>
+#include <cctype>
+#include <iostream>
+using std::cout;
+using std::endl;
 #include <fstream>
 using std::ifstream;
 using std::ofstream;
@@ -45,6 +50,17 @@ vector<pair<int, int> > Matcher::match(Relation* r1, Relation* r2)
     }
     if (!r2) {
         throw string("Input file 2 not set.");
+    }
+
+    if (Log::debug()) {
+        cout << "Types are:" << endl;
+        cout << "DATE = " << AttributeType::DATE << endl <<
+                "INTEGER = " << AttributeType::INTEGER << endl <<
+                "DOUBLE = " << AttributeType::DOUBLE << endl <<
+                "STRING = " << AttributeType::STRING << endl <<
+                "LONGSTRING = " << AttributeType::LONGSTRING << endl <<
+                "ID = " << AttributeType::ID << endl <<
+                "RANGE = " << AttributeType::RANGE << endl;
     }
 
     vector<pair<int, int> > matches;
@@ -105,7 +121,7 @@ vector<pair<int, int> > Matcher::match(Relation* r1, Relation* r2)
                 const vector<string>* attr1 = 0, *attr2 = 0;
                 try {
                     attr1 = mRelations.first->attribute(attrs.first);
-                    attr2 = mRelations.first->attribute(attrs.second);
+                    attr2 = mRelations.second->attribute(attrs.second);
                 } catch (const string ex) {
                     Log::e(TAG, string("Error matching attributes: ").append(ex));
                     continue;
@@ -170,23 +186,28 @@ void Matcher::findSingularMatchings(vector<pair<int, int> >& matches)
 
 bool Matcher::attributesMatch(const vector<std::string>& a, const vector<std::string>& b, const AttributeType t)
 {
+//    cout << "Matching type " << t << endl;
     switch (t) {
     case INTEGER: {
-
         int mean1 = 0, mean2 = 0;
+        double jaccardCoefficient = 0.0;
+
         for (const string& s : a) {
             mean1 += atoi(s.c_str());
         }
-        mean1 = mean1 / a.size();
 
         for (const string& s : b) {
             mean2 += atoi(s.c_str());
         }
-        mean2 = mean2 / a.size();
 
-        if ((mean1 < 100 && mean2 < 100) ||
+        mean1 = mean1 / a.size();
+        mean2 = mean2 / a.size();
+        jaccardCoefficient = jaccard(a,b);
+
+        if (((mean1 < 100 && mean2 < 100) ||
                 (mean1 < 1500 && mean2 < 1500) ||
-                (mean1 >= 1500 && mean2 >= 1500)) {
+                (mean1 >= 1500 && mean2 >= 1500)) &&
+                jaccardCoefficient > 0.5) {
             return true;
         } else {
             return false;
@@ -197,104 +218,86 @@ bool Matcher::attributesMatch(const vector<std::string>& a, const vector<std::st
     }
     case DOUBLE: {
         double dmean1 = 0, dmean2 = 0;
-
         bool maxMoreTen1 = false, maxMoreTen2 = false;
+        double jaccardCoefficient = 0.0;
+
         for (const string& s : a) {
             double d = atof(s.c_str());
             dmean1 += d;
-            if (d > 10) {
+            if (!maxMoreTen1 && d > 10) {
                 maxMoreTen1 = true;
             }
         }
-        dmean1 = dmean1 / a.size();
 
         for (const string& s : b) {
             double d = atof(s.c_str());
             dmean2 += d;
-            if (d > 10) {
+            if (!maxMoreTen2 && d > 10) {
                 maxMoreTen2 = true;
             }
         }
-        dmean2 = dmean2 / a.size();
+        dmean1 = dmean1 / a.size();
+        dmean2 = dmean2 / b.size();
+        jaccardCoefficient = jaccard(a, b);
 
-        if ((dmean1 > 50 && dmean2 > 50) ||
+        if (((dmean1 > 50 && dmean2 > 50) ||
                 (dmean1 < 5 && dmean2 < 5) ||
-                (maxMoreTen1 == maxMoreTen2)) {
+                (maxMoreTen1 == maxMoreTen2)) &&
+                jaccardCoefficient > 0.7) {
             return true;
+        } else {
+            return false;
         }
-
 
         break;
     }
     case STRING: {
-        // runtime test wordDifference
-//        for (unsigned int i = 0; i < a.size(); ++i) {
-//            Log::d(TAG, string("WordDifference: ").append(a[i]).append(" <-> ").append(b[i]));
-//            int wd = wordDifference(a[i], b[i]);
-//        }
-
-        //looks for meanlength of strings
+        //----
+        // Calculate string mean length, count empty entries and amount of
+        // commas in text
+        // empty = "", "-"
+        bool calculatedB = false;
         int meanlength1 = 0, meanlength2 = 0;
+        int emptyrows1 = 0, emptyrows2 = 0;
+        int countcomma1 = 0, countcomma2 = 0;
+        double jaccardCoefficient = 0.0;
 
-        //looks for "NULL" in a string
-        int nullrows1 = 0, nullrows2 = 0;
-
-        //looks for "," in strings
-        int countsymbol1 = 0, countsymbol2 = 0;
-
-        /* Matching over stringlength. Long strings, whit over 20 elements,
-         * and very short stings, with length under 5, build two groups with
-         * different properties, in contrast to the other groups. */
-         //counts NULLS and calculates the meanlength for attrib 1
-        for (const string& s : a){
+        for (const string& s : a) {
             meanlength1 += s.size();
-            if (s.empty()){
-                ++nullrows1;
+            if (s.empty()) {
+                ++emptyrows1;
+            } else {
+                countcomma1 += std::count(s.begin(), s.end(), ',');
             }
         }
-        meanlength1 = meanlength1 / a.size();
-
-        //counts NULLS and calculates the meanlength for attrib 2
-        for (const string& s : b){
+        for (const string& s : b) {
             meanlength2 += s.size();
-            if (s.empty()){
-                ++nullrows2;
+            if (s.empty()) {
+                ++emptyrows2;
+            } else {
+                countcomma2 += std::count(s.begin(), s.end(), ',');
             }
         }
+
+        jaccardCoefficient = jaccard(a, b);
+        meanlength1 = meanlength1 / a.size();
         meanlength2 = meanlength2 / b.size();
+        countcomma1 = countcomma1 / a.size();
+        countcomma2 = countcomma2 / b.size();
 
-        //matches very short stings
-        if (meanlength1 <=4 && meanlength2 <= 4){
+        //---
+        // Check results
+
+        if (((meanlength1 <= 4 && meanlength2 <= 4) ||
+                (countcomma1 < 10 && countcomma2 < 10) ||
+                (countcomma1 >= 10 && countcomma2 >= 10) ||
+                (emptyrows1 > 4 && emptyrows2 > 4)) &&
+                jaccardCoefficient > 0.7) {
             return true;
+        } else {
+            return false;
         }
 
-        /* Matchings over "," in strings... stings with more "," than
-         * 10 matches and with less than 10! These strings differ in the sum
-         * of "," in strings, in contrast to the other string attributs. */
-         else if((countsymbol1 < 10 && countsymbol2 < 10) || (countsymbol1 >= 10 && countsymbol2 >= 10)){
-
-            for (const string& s : a){
-                if (strchr(s.c_str(), ',')){
-                    ++countsymbol1;
-                }
-            }
-            for (const string& s : b){
-                if (strchr(s.c_str(), ',')){
-                    ++countsymbol2;
-                }
-            }
-            if ((countsymbol1 < 10 && countsymbol2 < 10) || (countsymbol1 > 10 && countsymbol2 > 10)){
-                return true;
-            }
-        }
-        /* looks for "NULL" rows and differs between sets with much NULL rows.
-         * this sets are posible candidates for a match. see origin attribute
-         * three, no other attribute has so much NULL rows (179) in it! Only the last
-         * Attrib in origin File has NULL rows, but only 4! */
-
-        else if(nullrows1 > 4 && nullrows2 > 4){
-            return true;
-        }
         break;
     }
     case DATE: {
@@ -320,9 +323,10 @@ bool Matcher::attributesMatch(const vector<std::string>& a, const vector<std::st
         break;
     }
     default:
-        return false;
-
+        break;
     }
+
+    return false;
 }
 
 int Matcher::wordDifference(const std::string& s, const std::string& t)
@@ -337,14 +341,10 @@ int Matcher::wordDifference(const std::string& s, const std::string& t)
         return 0;
     }
 
-    string small, big;
-    if (s.size() < t.size()) {
-        std::transform(s.begin(), s.end(), small.begin(), ::tolower);
-        std::transform(t.begin(), t.end(), big.begin(), ::tolower);
-    } else {
-        std::transform(s.begin(), s.end(), big.begin(), ::tolower);
-        std::transform(t.begin(), t.end(), small.begin(), ::tolower);
-    }
+    string small((s.size() < t.size()) ? s : t);
+    string big((s.size() > t.size()) ? s : t);
+    std::transform(small.begin(), small.end(), small.begin(), std::ptr_fun<int, int>(std::tolower));
+    std::transform(big.begin(), big.end(), big.begin(), std::ptr_fun<int, int>(std::tolower));
 
     int diff = 0;
     for (unsigned int i = 0, j = 0; i < small.size(), j < big.size(); ++i, ++j) {
@@ -355,6 +355,49 @@ int Matcher::wordDifference(const std::string& s, const std::string& t)
     }
 
     return diff;
+}
+
+double Matcher::jaccard(const vector<std::string>& a, const vector<std::string>& b)
+{
+    vector<string> intersected;
+    vector<string> united;
+
+    for (string s : a) {
+        if (std::find(united.begin(), united.end(), s) == united.end()) {
+            united.push_back(s);
+        }
+
+        if (std::find(intersected.begin(), intersected.end(), s) == intersected.end()) {
+            for (string s2 : b) {
+                if (s == s2) {
+                    intersected.push_back(s2);
+                    break;
+                }
+            }
+        }
+    }
+
+    // Add all values from b to union
+    for (string s : b) {
+        if (std::find(united.begin(), united.end(), s) == united.end()) {
+            united.push_back(s);
+        }
+    }
+
+    cout << "==== JACCARD" << endl;
+    cout << "intersected = [ ";
+    for (string s : intersected) {
+        cout << s << ", ";
+    }
+    cout << "]" << endl << "united= [ ";
+    for (string s : united) {
+        cout << s << ", ";
+    }
+    cout << "]" << endl << "Result: " <<
+            intersected.size() << "/" << united.size() << " = " <<
+            (0.0 + intersected.size()) / united.size() << endl <<
+            "JACCARD ====" << endl << endl;
+    return ((0.0 + intersected.size()) / united.size());
 }
 
 //------------------------------------------------------------------------------
