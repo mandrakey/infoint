@@ -16,7 +16,8 @@ SOURCES += attrmatch.cpp \
     bmlib/log.cpp \
     model/relation.cpp \
     model/matcher.cpp \
-    model/attributeblock.cpp
+    model/attributeblock.cpp \
+    model/attributetype.cpp
 
 HEADERS += \
     attrmatch.hpp \

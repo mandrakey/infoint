@@ -13,6 +13,8 @@ using std::string;
 using std::shared_ptr;
 #include <boost/regex.hpp>
 using boost::regex;
+#include <iostream>
+using std::ostream;
 
 class Relation
 {
@@ -38,17 +40,19 @@ public:
     const map<int, vector<string> >& attributes() const;
     const vector<string>* attribute(int index) const throw (const string);
     map<int, vector<AttributeType> >& attributeTypes();
-    const map<int, vector<AttributeBlock> >& attributeBlocks() const;
+    const map<int, vector<AttributeType> >& attributeTypes_const() const;
     
 private:
     string mFileName;
     map<int, vector<string> > mAttributes;
     map<int, vector<AttributeType> > mAttributeTypes;
-    map<int, vector<AttributeBlock> > mAttributeBlocks;
+//    map<int, vector<AttributeBlock> > mAttributeBlocks;
 
     void parseLine(const char* line);
     void addAttribute(int& index, const string& attribute);
     AttributeType getType(const string& attribute);
 };
+
+ostream& operator<<(ostream& lhs, const Relation& rhs);
 
 #endif

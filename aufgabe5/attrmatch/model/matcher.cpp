@@ -72,10 +72,24 @@ vector<pair<int, int> > Matcher::match(Relation* r1, Relation* r2)
     mCurrentRelation = mRelations.first;
     readParseRelation();
     mCurrentRelation->compressAttributeTypes();
+    if (Log::debug()) {
+        cout << endl << mCurrentRelation->fileName() << endl <<
+                "--------------------------------------------------------------------------------" <<
+                endl << *mCurrentRelation <<
+                "--------------------------------------------------------------------------------" <<
+                endl;
+    }
 
     mCurrentRelation = mRelations.second;
     readParseRelation();
     mCurrentRelation->compressAttributeTypes();
+    if (Log::debug()) {
+        cout << endl << mCurrentRelation->fileName() << endl <<
+                "--------------------------------------------------------------------------------" <<
+                endl << *mCurrentRelation <<
+                "--------------------------------------------------------------------------------" <<
+                endl;
+    }
 
     // todo: Implement following steps in matcher
 
@@ -127,10 +141,15 @@ vector<pair<int, int> > Matcher::match(Relation* r1, Relation* r2)
                     continue;
                 }
 
+                cout << "Trying to match: " << "(" << AttributeTypeToString(p.first) << ") " <<
+                                            attrs.first << " against " <<
+                                            attrs.second << endl;
                 if (attributesMatch(*attr1, *attr2, p.first)) {
                     matches.push_back(pair<int, int>(attrs.first, attrs.second));
                     matched.push_back(attrs.first);
                 }
+            } else {
+                cout << "Not testing: " << attrs.first << " <-> " << attrs.second << endl;
             }
         }
     }
@@ -207,7 +226,7 @@ bool Matcher::attributesMatch(const vector<std::string>& a, const vector<std::st
         if (((mean1 < 100 && mean2 < 100) ||
                 (mean1 < 1500 && mean2 < 1500) ||
                 (mean1 >= 1500 && mean2 >= 1500)) &&
-                jaccardCoefficient > 0.5) {
+                jaccardCoefficient > 0.1) {
             return true;
         } else {
             return false;
@@ -243,7 +262,7 @@ bool Matcher::attributesMatch(const vector<std::string>& a, const vector<std::st
         if (((dmean1 > 50 && dmean2 > 50) ||
                 (dmean1 < 5 && dmean2 < 5) ||
                 (maxMoreTen1 == maxMoreTen2)) &&
-                jaccardCoefficient > 0.7) {
+                jaccardCoefficient > 0.1) {
             return true;
         } else {
             return false;
@@ -292,7 +311,7 @@ bool Matcher::attributesMatch(const vector<std::string>& a, const vector<std::st
                 (countcomma1 < 10 && countcomma2 < 10) ||
                 (countcomma1 >= 10 && countcomma2 >= 10) ||
                 (emptyrows1 > 4 && emptyrows2 > 4)) &&
-                jaccardCoefficient > 0.7) {
+                jaccardCoefficient > 0.5) {
             return true;
         } else {
             return false;
@@ -369,7 +388,8 @@ double Matcher::jaccard(const vector<std::string>& a, const vector<std::string>&
 
         if (std::find(intersected.begin(), intersected.end(), s) == intersected.end()) {
             for (string s2 : b) {
-                if (s == s2) {
+                if ((s.size() <= 7 && s == s2) ||
+                        (s.size() > 7 && wordDifference(s,s2) < 2)) {
                     intersected.push_back(s2);
                     break;
                 }
@@ -384,19 +404,21 @@ double Matcher::jaccard(const vector<std::string>& a, const vector<std::string>&
         }
     }
 
-    cout << "==== JACCARD" << endl;
-    cout << "intersected = [ ";
-    for (string s : intersected) {
-        cout << s << ", ";
+    if (Log::debug()) {
+        cout << "==== JACCARD" << endl;
+        cout << "intersected = [ ";
+        for (string s : intersected) {
+            cout << s << ", ";
+        }
+        cout << "]" << endl << "united= [ ";
+        for (string s : united) {
+            cout << s << ", ";
+        }
+        cout << "]" << endl << "Result: " <<
+                intersected.size() << "/" << united.size() << " = " <<
+                (0.0 + intersected.size()) / united.size() << endl <<
+                "JACCARD ====" << endl << endl;
     }
-    cout << "]" << endl << "united= [ ";
-    for (string s : united) {
-        cout << s << ", ";
-    }
-    cout << "]" << endl << "Result: " <<
-            intersected.size() << "/" << united.size() << " = " <<
-            (0.0 + intersected.size()) / united.size() << endl <<
-            "JACCARD ====" << endl << endl;
     return ((0.0 + intersected.size()) / united.size());
 }
 

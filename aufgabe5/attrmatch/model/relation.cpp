@@ -12,25 +12,28 @@ using std::string;
 using std::vector;
 using std::map;
 using std::shared_ptr;
+using std::ostream;
+using std::cout;
+using std::endl;
 
 using boost::regex;
 
 const char* Relation::TAG = "Relation";
 const char Relation::TUPLE_SEPARATOR = ';';
 const regex Relation::RX_ID("[0-9]{1,3}[a-zA-Z]{2,3}[0-9]{2,3}");
-const regex Relation::RX_DATE("([0-9]{1,2}\\-)?[a-zA-Z]{3}\\-[0-9]{2}");
-const regex Relation::RX_DATE_FOR_THE_STUPID_IDIOTS_WHO_CANNOT_HANDLE_EXCEL("[0-9]{1,2}\. [a-zA-Z]{2,3} [0-9]{2}");
+const regex Relation::RX_DATE("([0-9]{1,2}\\-)?[a-zA-Z]{2,3}\\-[0-9]{2}");
+const regex Relation::RX_DATE_FOR_THE_STUPID_IDIOTS_WHO_CANNOT_HANDLE_EXCEL("[0-9]{1,2}\\. [a-zA-Z]{2,3} [0-9]{2}");
 const regex Relation::RX_RANGE("[0-9\\.]+ ?(\\-|to) ?[0-9\\.]+");
 const regex Relation::RX_DOUBLE("\\-?[0-9]+\\.[0-9]+");
 const regex Relation::RX_INTEGER("\\-?[0-9]+");
 
 Relation::Relation(const char* filename) :
-    mFileName(filename), mAttributes(), mAttributeTypes(), mAttributeBlocks()
+    mFileName(filename), mAttributes(), mAttributeTypes()
 {
 }
 
 Relation::Relation(const string& filename) :
-    mFileName(filename), mAttributes(), mAttributeTypes(), mAttributeBlocks()
+    mFileName(filename), mAttributes(), mAttributeTypes()
 {
 }
 
@@ -92,8 +95,13 @@ void Relation::parseLine(const char* line)
     // -> enables calls to Matcher's event methods
     // !important: count attribute number!
 
-    for (unsigned int i = 0; i < strlen(line); ++i) {
+    for (size_t i = 0; i < strlen(line); ++i) {
         char c = line[i];
+        string tmp(&c);
+        if (c == 13 || c == 10) {
+            continue;
+        }
+
         if (literal) {
             if (c == '\"') {
                 literal = false;
@@ -113,6 +121,7 @@ void Relation::parseLine(const char* line)
         }
     }
 
+    cout << "\"" << token.str() << "\"" << endl;
     if (!token.str().empty()) {
         addAttribute(attributeIndex, token.str());
     }
@@ -120,9 +129,19 @@ void Relation::parseLine(const char* line)
 
 void Relation::addAttribute(int& index, const string& attribute)
 {
+//    cout << "Adding " << attribute << "(" << index << ")" << endl;
     string attr(attribute);
     attr.erase(0, attr.find_first_not_of(' '));
     attr.erase(attr.find_last_not_of(' ') + 1);
+
+    // Delete some chars we do not like...
+    unsigned long int pos = 0;
+    while ((pos = attr.find_first_of("\\r")) != string::npos) {
+        attr.replace(pos, 1, "");
+    }
+    while ((pos = attr.find_first_of("\\n")) != string::npos) {
+        attr.replace(pos, 1, "");
+    }
 
     mAttributes[index].push_back(attr);
     mAttributeTypes[index].push_back(getType(attr));
@@ -211,7 +230,24 @@ map<int, vector<AttributeType> >& Relation::attributeTypes()
     return mAttributeTypes;
 }
 
-const map<int, vector<AttributeBlock> >& Relation::attributeBlocks() const
+const map<int, vector<AttributeType> >& Relation::attributeTypes_const() const
 {
-    return mAttributeBlocks;
+    return mAttributeTypes;
+}
+
+ostream& operator<<(ostream& lhs, const Relation& rhs)
+{
+    const map<int, vector<string> >& attrs = rhs.attributes();
+    const map<int, vector<AttributeType> >& types = rhs.attributeTypes_const();
+
+    for (pair<int, vector<string> > p : attrs) {
+        cout << "(" << AttributeTypeToString(types.at(p.first).at(0)) << ") " <<
+                "#" << p.first << " [ ";
+        for (string& s : p.second) {
+            cout << s << ", ";
+        }
+        cout << "];" << endl << endl;
+    }
+
+    return lhs;
 }

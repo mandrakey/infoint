@@ -18,7 +18,7 @@ using std::pair;
 
 int main(int argc, char* argv[])
 {
-    Log::setDebug(true);
+    Log::setDebug(false);
     if (argc != 4) {
         cout << "usage: attrmatch relation1 relation2 outfile" << endl;
         return 1;
@@ -29,14 +29,14 @@ int main(int argc, char* argv[])
     cout << "Running with params:" << endl << 
             "inputFile1 = " << am.inputFile1() << endl << 
             "inputFile2 = " << am.inputFile2() << endl <<
-            "outputFile = " << am.outputFile() << endl;
+            "outputFile = " << am.outputFile() << endl << endl;
 
     //--------------------------------------------------------------------------
     // Load relations from input files and parse
 
-    Matcher m;
     Relation r1(am.inputFile1());
     Relation r2(am.inputFile2());
+    Matcher m;
     vector<pair<int, int> > matches;
 
     try {
@@ -46,9 +46,12 @@ int main(int argc, char* argv[])
         return -1;
     }
 
+
+    cout << endl << "-----" << endl << "I guess the following matches, if any:" << endl;
     for (pair<int, int> p : matches) {
         cout << "Match: " << p.first + 1 << " -> " << p.second + 1 << endl;
     }
+    cout << "-----" << endl << endl;
     
     //--------------------------------------------------------------------------
     // Reading complete. Write output
@@ -62,4 +65,7 @@ int main(int argc, char* argv[])
     for (pair<int, int> p : matches) {
         out << p.first + 1 << "," << p.second + 1 << endl;
     }
+
+    cout << "DONE." << endl <<
+            "Just ignore the following segfault... Some clib internal stuff." << endl;
 }
