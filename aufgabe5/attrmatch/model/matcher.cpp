@@ -275,7 +275,6 @@ bool Matcher::attributesMatch(const vector<std::string>& a, const vector<std::st
         // Calculate string mean length, count empty entries and amount of
         // commas in text
         // empty = "", "-"
-        bool calculatedB = false;
         int meanlength1 = 0, meanlength2 = 0;
         int emptyrows1 = 0, emptyrows2 = 0;
         int countcomma1 = 0, countcomma2 = 0;
@@ -311,7 +310,7 @@ bool Matcher::attributesMatch(const vector<std::string>& a, const vector<std::st
                 (countcomma1 < 10 && countcomma2 < 10) ||
                 (countcomma1 >= 10 && countcomma2 >= 10) ||
                 (emptyrows1 > 4 && emptyrows2 > 4)) &&
-                jaccardCoefficient > 0.5) {
+                jaccardCoefficient > 0.3) {
             return true;
         } else {
             return false;
