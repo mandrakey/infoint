@@ -97,7 +97,6 @@ void Relation::parseLine(const char* line)
 
     for (size_t i = 0; i < strlen(line); ++i) {
         char c = line[i];
-        string tmp(&c);
         if (c == 13 || c == 10) {
             continue;
         }
@@ -121,7 +120,6 @@ void Relation::parseLine(const char* line)
         }
     }
 
-    cout << "\"" << token.str() << "\"" << endl;
     if (!token.str().empty()) {
         addAttribute(attributeIndex, token.str());
     }
