@@ -1,0 +1,7 @@
+= Delta-Calculator
+
+This version of the delta calculator was created to demonstrate and practice 
+writing mutli-threaded applications using C++11 with a shared job queue.
+
+It runs and finished, but calculations are somewhat off and the results are 
+not formatted properly as well as not written into a file.
