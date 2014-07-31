@@ -57,7 +57,6 @@ int main()
                 //executeDeltaCalculatorThread
                 Delta::JOBQUEUE.push(pair<string, string>(f1, f2));
                 ++Delta::DELTA_COUNT;
-                Delta::addResultsForEquals(f1, f2);
             }
 
             Delta::DONE_FILES.push_back(Delta::resultKey(f1, f2));
