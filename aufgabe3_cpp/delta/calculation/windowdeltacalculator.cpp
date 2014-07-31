@@ -55,8 +55,8 @@ map<string, int> WindowDeltaCalculator::calculateDelta(const string& f1, const s
         fillInputBuffer(1, in2);
     }
 
-//    results["DELETE"] = agingBuffer[0].size();
-//    results["INSERT"] = agingBuffer[1].size();
+    results["DELETE"] = agingBuffer[0].size();
+    results["INSERT"] = agingBuffer[1].size();
 
     in1.close();
     in2.close();
