@@ -28,8 +28,8 @@ namespace Delta
     //==========================================================================
     // CONFIGURATION
 
-//    const string WORKDIR("./");
-    const string WORKDIR("/local/II2014/uebung3/");
+    const string WORKDIR("./");
+//    const string WORKDIR("/local/II2014/uebung3/");
     const string OUTFILE(WORKDIR + "horst.txt");
     const int INPUTBUFFER_SIZE = 1000;
     const int NUM_THREADS = 8;
