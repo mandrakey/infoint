@@ -1,5 +1,6 @@
 require "thread"
 require_relative "calculation/entry"
+require_relative "calculation/WindowDeltaCalculator"
 
 class Delta
     EXIT_OK = 0
